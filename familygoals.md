@@ -22,7 +22,8 @@
     - [ ] Q2
     - [ ] Q3
     - [ ] Q4
-- [ ] Read New Testament and Book of Mormon
+- [ ] Read New Testament
+- [ ] Read the Book of Mormon
 
 ### Physical
 - [ ] Jordanelle Olympic Triathlon
@@ -105,7 +106,19 @@
 ## Jules
 ### Social
 - [ ] Every week play with friend outside
-- [ ] Go on a mommy or daddy daughter date
+- [ ] Go on a mommy or daddy daughter date every month
+    - [ ] January
+    - [ ] February
+    - [ ] March
+    - [ ] April
+    - [ ] May
+    - [ ] June
+    - [ ] July
+    - [ ] August
+    - [ ] September
+    - [ ] October
+    - [ ] November
+    - [ ] December
 
 ### Spiritual
 - [ ] Finish the Book of Mormon
