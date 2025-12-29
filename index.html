@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Goals</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-color: #333;
+            --bg-color: #f4f4f9;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn.active {
+            background-color: var(--accent-color);
+            border-left: 5px solid white;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none; /* Hidden by default */
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block; /* Show active tab */
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        h1 { border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
+        h3 { color: var(--primary-color); margin-top: 25px; }
+        
+        ul { list-style-type: none; padding: 0; }
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Custom Checkbox Style */
+        input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--accent-color);
+        }
+
+        /* --- Mobile Hamburger Menu --- */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 900;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%); /* Hide sidebar off-screen */
+            }
+
+            .sidebar.open {
+                transform: translateX(0); /* Slide in */
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 60px 20px 20px 20px;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    
+    <div class="overlay" onclick="closeMenu()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <h2>Family Goals</h2>
+        <button class="nav-btn active" onclick="openTab(event, 'sam')">Sam</button>
+        <button class="nav-btn" onclick="openTab(event, 'nicole')">Nicole</button>
+        <button class="nav-btn" onclick="openTab(event, 'millie')">Millie</button>
+        <button class="nav-btn" onclick="openTab(event, 'jules')">Jules</button>
+        <button class="nav-btn" onclick="openTab(event, 'eve')">Eve</button>
+    </nav>
+
+    <div class="main-content">
+        
+        <div id="sam" class="tab-content active">
+            <h1>Sam's Goals</h1>
+            
+            <h3>Social</h3>
+            <ul><li><input type="checkbox"> Daddy daughter date every month</li></ul>
+
+            <h3>Spiritual</h3>
+            <ul>
+                <li><input type="checkbox"> Go to temple quarterly</li>
+                <li><input type="checkbox"> Read New Testament and Book of Mormon</li>
+            </ul>
+
+            <h3>Physical</h3>
+            <ul>
+                <li><input type="checkbox"> Jordanelle Olympic Triathlon</li>
+                <li><input type="checkbox"> Century Ride</li>
+                <li><input type="checkbox"> 70.3 (Half Ironman)</li>
+            </ul>
+
+            <h3>Intellectual</h3>
+            <ul>
+                <li><input type="checkbox"> Launch flow meter business with Jason</li>
+                <li><input type="checkbox"> Finish RV escape room</li>
+            </ul>
+        </div>
+
+        <div id="nicole" class="tab-content">
+            <h1>Nicole's Goals</h1>
+            
+            <h3>Social</h3>
+            <ul>
+                <li><input type="checkbox"> Go on mommy-daughter date at least 1x/month</li>
+                <li><input type="checkbox"> Take a trip to Colorado</li>
+                <li><input type="checkbox"> Hold 1 new event @ Roy Elementary</li>
+                <li><input type="checkbox"> Invite 5 new parents to join PTA</li>
+            </ul>
+
+            <h3>Spiritual</h3>
+            <ul>
+                <li><input type="checkbox"> Study the Old Testament 3x/week</li>
+                <li><input type="checkbox"> Attend the temple quarterly</li>
+                <li><input type="checkbox"> Ministering visits at least 6x</li>
+            </ul>
+
+            <h3>Physical</h3>
+            <ul>
+                <li><input type="checkbox"> Exercise 3 days per week</li>
+                <li><input type="checkbox"> Join a pickleball or tennis league</li>
+            </ul>
+
+            <h3>Intellectual</h3>
+            <ul>
+                <li><input type="checkbox"> Meet with 2 different legislators</li>
+                <li><input type="checkbox"> Practice piano 1x per week</li>
+                <li><input type="checkbox"> Complete 15 CEUs for RD</li>
+                <li><input type="checkbox"> Give 1 presentation or talk</li>
+            </ul>
+        </div>
+
+        <div id="millie" class="tab-content">
+            <h1>Millie's Goals</h1>
+            
+            <h3>Social</h3>
+            <ul><li><input type="checkbox"> Go on at least one daddy daughter date or mommy daughter date once a month</li></ul>
+
+            <h3>Spiritual</h3>
+            <ul><li><input type="checkbox"> Pray every night</li></ul>
+
+            <h3>Physical</h3>
+            <ul><li><input type="checkbox"> Be outside for at least 1 hour for at least 3 days a week</li></ul>
+
+            <h3>Intellectual</h3>
+            <ul><li><input type="checkbox"> Read at least one chapter book</li></ul>
+        </div>
+
+        <div id="jules" class="tab-content">
+            <h1>Jules's Goals</h1>
+            
+            <h3>Social</h3>
+            <ul>
+                <li><input type="checkbox"> Every week play with friend outside</li>
+                <li><input type="checkbox"> Go on a mommy or daddy daughter date</li>
+            </ul>
+
+            <h3>Spiritual</h3>
+            <ul><li><input type="checkbox"> Finish the Book of Mormon</li></ul>
+
+            <h3>Physical</h3>
+            <ul><li><input type="checkbox"> Try a fifteen mile bike ride with dad</li></ul>
+
+            <h3>Intellectual</h3>
+            <ul><li><input type="checkbox"> Memorize the young women’s theme</li></ul>
+        </div>
+
+        <div id="eve" class="tab-content">
+            <h1>Eve's Goals</h1>
+            
+            <h3>Physical</h3>
+            <ul><li><input type="checkbox"> Soccer</li></ul>
+
+            <h3>Intellectual</h3>
+            <ul><li><input type="checkbox"> Finish upstart</li></ul>
+        </div>
+
+    </div>
+
+    <script>
+        function openTab(evt, personName) {
+            // Hide all tab content
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+
+            // Remove active class from all buttons
+            tablinks = document.getElementsByClassName("nav-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab and add active class to button
+            document.getElementById(personName).style.display = "block";
+            setTimeout(() => {
+                document.getElementById(personName).classList.add("active");
+            }, 10);
+            evt.currentTarget.className += " active";
+
+            // If on mobile, close menu after selection
+            if (window.innerWidth <= 768) {
+                closeMenu();
+            }
+        }
+
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("open");
+            document.querySelector(".overlay").classList.toggle("active");
+        }
+
+        function closeMenu() {
+            document.getElementById("sidebar").classList.remove("open");
+            document.querySelector(".overlay").classList.remove("active");
+        }
+    </script>
+</body>
+</html>
