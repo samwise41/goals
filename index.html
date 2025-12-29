@@ -93,7 +93,7 @@
             color: var(--primary-color);
         }
 
-        /* --- Home Tab Image Styling --- */
+        /* --- Hero Image --- */
         .hero-image-container {
             display: flex;
             justify-content: center;
@@ -144,12 +144,14 @@
             line-height: 1.4;
         }
         
+        /* CHECKBOX STYLING */
         input[type="checkbox"] {
             margin-right: 12px;
             margin-top: 3px;
             transform: scale(1.1);
             accent-color: var(--accent-color);
             flex-shrink: 0;
+            pointer-events: none; /* This makes the checkbox unclickable for the user */
         }
 
         /* --- Mobile Hamburger Menu --- */
@@ -424,7 +426,7 @@
             if (hash) {
                 switchTab(hash);
             } else {
-                switchTab('home'); // Default to home
+                switchTab('home');
             }
         });
 
@@ -433,7 +435,6 @@
             if (hash) {
                 switchTab(hash);
             } else {
-                // Set Default URL to #home
                 history.replaceState(null, null, '#home');
                 switchTab('home');
             }
