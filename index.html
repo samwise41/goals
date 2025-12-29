@@ -74,6 +74,7 @@
             padding: 40px;
             width: 100%;
             overflow-y: auto;
+            padding-bottom: 150px; /* Space for debug log */
         }
 
         .tab-content {
@@ -196,10 +197,28 @@
             color: #666;
         }
 
+        /* --- DEBUG CONSOLE (Remove this later) --- */
+        #debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: #222;
+            color: #0f0;
+            font-family: monospace;
+            padding: 10px;
+            overflow-y: scroll;
+            z-index: 9999;
+            box-sizing: border-box;
+            opacity: 0.9;
+            border-top: 2px solid #555;
+        }
+
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 60px 20px 20px 20px; }
+            .main-content { margin-left: 0; padding: 60px 20px 160px 20px; }
             .goals-grid { grid-template-columns: 1fr; }
             .hamburger { display: block; }
             .overlay.active { display: block; }
@@ -235,35 +254,57 @@
 
     </div>
 
+    <div id="debug-console">Initializing App...<br></div>
+
     <script>
+        function log(msg) {
+            const consoleDiv = document.getElementById('debug-console');
+            consoleDiv.innerHTML += `> ${msg}<br>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            console.log(msg);
+        }
+
         // ---------------------------------------------------------
         // 1. FETCH AND PARSE MARKDOWN
         // ---------------------------------------------------------
         async function loadGoals() {
+            log("Attempting to fetch familygoals.md...");
+            
+            // CHECK IF LOCAL
+            if (window.location.protocol === 'file:') {
+                log("ERROR: You are running this locally (file://). Fetch will not work due to browser security (CORS).");
+                log("SOLUTION: Commit this to GitHub and open the github.io link.");
+                document.getElementById('loading').innerText = "Error: Cannot run locally. Upload to GitHub Pages.";
+                return;
+            }
+
             try {
-                // Fetch the markdown file. We add a timestamp to prevent browser caching issues.
+                // Add timestamp to bypass cache
                 const response = await fetch('familygoals.md?t=' + new Date().getTime());
                 
                 if (!response.ok) {
-                    throw new Error("Could not find familygoals.md");
+                    throw new Error(`HTTP Error: ${response.status} (File not found?)`);
                 }
                 
                 const text = await response.text();
+                log(`File fetched successfully! (${text.length} characters)`);
                 parseMarkdown(text);
 
             } catch (error) {
-                document.getElementById('loading').innerHTML = "Error loading goals: " + error.message + "<br>Make sure familygoals.md is in the same folder.";
+                log(`FATAL ERROR: ${error.message}`);
+                document.getElementById('loading').innerHTML = `Error: ${error.message}<br>Check if 'familygoals.md' is named correctly (Case Sensitive!)`;
             }
         }
 
         function parseMarkdown(markdown) {
+            log("Parsing markdown...");
             const lines = markdown.split('\n');
             const people = {};
             let currentPerson = null;
             let currentCategory = null;
+            let goalCount = 0;
 
-            // --- PARSING LOGIC ---
-            lines.forEach(line => {
+            lines.forEach((line, index) => {
                 const rawLine = line;
                 
                 // 1. Detect Person (## Name)
@@ -273,6 +314,7 @@
                         Social: [], Spiritual: [], Physical: [], Intellectual: []
                     };
                     currentCategory = null; 
+                    log(`Found Person: ${currentPerson}`);
                 }
                 // 2. Detect Category (### Category)
                 else if (rawLine.trim().startsWith('### ')) {
@@ -280,42 +322,44 @@
                 }
                 // 3. Detect Goals and Sub-goals
                 else {
-                    // Regex looks for: 
-                    // Group 1: Leading whitespace (indentation)
-                    // Group 2: The checkbox status [ ] or [x]
-                    // Group 3: The actual text content
-                    const taskMatch = rawLine.match(/^(\s*)-\s*\[([ xX])\]\s*(.*)/);
+                    // Regex: Detects - [ ] or * [ ] with loose spacing
+                    const taskMatch = rawLine.match(/^(\s*)(?:-|\*)\s*\[([ xX])\]\s*(.*)/);
 
                     if (taskMatch) {
-                        const indentation = taskMatch[1].length; // How many spaces/tabs at start?
+                        const indentation = taskMatch[1].length; 
                         const isChecked = taskMatch[2].toLowerCase() === 'x';
                         let goalText = taskMatch[3];
 
-                        // --- Clean text more aggressively ---
-                        // Removes [cite_start],[cite: 16], etc.
-                        goalText = goalText.replace(/\[cite_start\]/gi, '')
-                                           .replace(/\/g, '')
+                        // --- AGGRESSIVE CLEANING ---
+                        // Removes [cite_start],[cite: 1], 
+                        goalText = goalText.replace(/\[cite.*?\]/gi, '') // Remove [cite...]
+                                           .replace(/\[source.*?\]/gi, '') // Remove [source...]
                                            .trim();
 
-                        // Logic: If indentation is 2 or more spaces (or a tab), it's a Sub-task
-                        // This fixes the issue where 2 spaces vs 4 spaces caused bugs
-                        const isSubTask = indentation >= 2;
+                        const isSubTask = indentation >= 2; // 2+ spaces = subtask
 
                         if (isSubTask) {
-                            // Add to the LAST goal added to the current category
+                            // Add to last goal
                             if (currentPerson && currentCategory && people[currentPerson][currentCategory].length > 0) {
                                 const goalsList = people[currentPerson][currentCategory];
                                 goalsList[goalsList.length - 1].subTasks.push({ text: goalText, checked: isChecked });
                             }
                         } else {
-                            // It is a Main Goal
+                            // Main Goal
                             if (currentPerson && currentCategory && people[currentPerson][currentCategory]) {
                                 people[currentPerson][currentCategory].push({ text: goalText, checked: isChecked, subTasks: [] });
+                                goalCount++;
                             }
                         }
                     }
                 }
             });
+
+            log(`Parsing complete. Found ${goalCount} total goals.`);
+            
+            if (goalCount === 0) {
+                log("WARNING: 0 goals found. Is the markdown formatted correctly? (Check ## Headers and - [ ] checkboxes)");
+            }
 
             renderGoals(people);
         }
@@ -324,18 +368,17 @@
         // 2. RENDER HTML
         // ---------------------------------------------------------
         function renderGoals(people) {
+            log("Rendering HTML...");
             const navContainer = document.getElementById('dynamic-nav-container');
             const mainContainer = document.getElementById('main-content');
             const loadingDiv = document.getElementById('loading');
             
-            // Clear loading message
             loadingDiv.style.display = 'none';
 
-            // Loop through each person found in the markdown
             for (const personName in people) {
                 const safeId = personName.toLowerCase().replace(/\s+/g, '-');
 
-                // 1. Create Sidebar Link
+                // 1. Sidebar Link
                 const link = document.createElement('a');
                 link.href = '#' + safeId;
                 link.className = 'nav-btn';
@@ -343,18 +386,15 @@
                 link.textContent = personName;
                 navContainer.appendChild(link);
 
-                // 2. Create Content Div
+                // 2. Content Div
                 const contentDiv = document.createElement('div');
                 contentDiv.id = safeId;
                 contentDiv.className = 'tab-content';
                 
-                // Build the inner HTML
                 let html = `<h1>${personName}'s Goals</h1><div class="goals-grid">`;
 
-                // Loop through 4 Quadrants
                 const categories = ['Social', 'Spiritual', 'Physical', 'Intellectual'];
                 categories.forEach(cat => {
-                    // Define icon mapping
                     let icon = '';
                     if(cat === 'Social') icon = '👥';
                     if(cat === 'Spiritual') icon = '🙏';
@@ -366,7 +406,6 @@
                         <h3>${icon} ${cat}</h3>
                         <ul>`;
                     
-                    // Add Goals
                     const goals = people[personName][cat] || [];
                     if (goals.length === 0) {
                         html += `<li>No goals listed</li>`;
@@ -375,7 +414,6 @@
                             const checked = goal.checked ? 'checked' : '';
                             html += `<li><input type="checkbox" ${checked}> ${goal.text}</li>`;
                             
-                            // Add Sub-tasks (Months/Quarters)
                             if (goal.subTasks.length > 0) {
                                 goal.subTasks.forEach(sub => {
                                     const subChecked = sub.checked ? 'checked' : '';
@@ -387,43 +425,38 @@
                     html += `</ul></div>`;
                 });
 
-                html += `</div>`; // Close grid
+                html += `</div>`;
                 contentDiv.innerHTML = html;
                 mainContainer.appendChild(contentDiv);
             }
-
-            // Initialize routing after rendering is done
+            
+            log("Render complete.");
             handleRouting();
         }
 
         // ---------------------------------------------------------
-        // 3. TAB LOGIC & ROUTING
+        // 3. ROUTING
         // ---------------------------------------------------------
         function switchTab(personId) {
-            // Hide all tabs
             const contents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < contents.length; i++) {
                 contents[i].style.display = "none";
                 contents[i].classList.remove("active");
             }
-            // Deactivate sidebar buttons
             const buttons = document.getElementsByClassName("nav-btn");
             for (let i = 0; i < buttons.length; i++) {
                 buttons[i].classList.remove("active");
             }
 
-            // Show target
             const target = document.getElementById(personId);
             if (target) {
                 target.style.display = "block";
                 setTimeout(() => target.classList.add("active"), 10);
             }
             
-            // Activate button
             const btn = document.getElementById("btn-" + personId);
             if (btn) btn.classList.add("active");
 
-            // Close mobile menu
             if (window.innerWidth <= 768) closeMenu();
         }
 
@@ -441,7 +474,6 @@
             switchTab(window.location.hash.substring(1));
         });
 
-        // Mobile Menu
         function toggleMenu() {
             document.getElementById("sidebar").classList.toggle("open");
             document.querySelector(".overlay").classList.toggle("active");
@@ -451,7 +483,6 @@
             document.querySelector(".overlay").classList.remove("active");
         }
 
-        // START APP
         document.addEventListener("DOMContentLoaded", loadGoals);
 
     </script>
