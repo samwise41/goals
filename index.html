@@ -123,10 +123,10 @@
             border-top: 5px solid var(--accent-color);
         }
 
-        .quadrant.social { border-top-color: #e74c3c; }      
-        .quadrant.spiritual { border-top-color: #f1c40f; }   
-        .quadrant.physical { border-top-color: #2ecc71; }    
-        .quadrant.intellectual { border-top-color: #9b59b6; }
+        .quadrant.Social { border-top-color: #e74c3c; }      
+        .quadrant.Spiritual { border-top-color: #f1c40f; }   
+        .quadrant.Physical { border-top-color: #2ecc71; }    
+        .quadrant.Intellectual { border-top-color: #9b59b6; }
 
         .quadrant h3 {
             margin-top: 0;
@@ -145,9 +145,9 @@
             line-height: 1.4;
         }
 
-        /* --- Sub-task Styling (For Months/Quarters) --- */
+        /* --- Sub-task Styling --- */
         .sub-task {
-            margin-left: 25px; /* Indent */
+            margin-left: 25px;
             padding: 4px 0;
             font-size: 0.9em;
             color: #666;
@@ -161,7 +161,7 @@
             transform: scale(1.1);
             accent-color: var(--accent-color);
             flex-shrink: 0;
-            pointer-events: none; /* Read-only */
+            pointer-events: none; /* Read only */
         }
 
         /* --- Mobile Hamburger Menu --- */
@@ -188,20 +188,19 @@
             z-index: 900;
         }
 
-        /* --- Responsive Design --- */
+        /* --- Loading Spinner --- */
+        #loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
-            
-            .main-content {
-                margin-left: 0;
-                padding: 60px 20px 20px 20px;
-            }
-
-            .goals-grid {
-                grid-template-columns: 1fr;
-            }
-
+            .main-content { margin-left: 0; padding: 60px 20px 20px 20px; }
+            .goals-grid { grid-template-columns: 1fr; }
             .hamburger { display: block; }
             .overlay.active { display: block; }
         }
@@ -220,14 +219,10 @@
     <nav class="sidebar" id="sidebar">
         <h2>Family Goals</h2>
         <a href="#home" class="nav-btn" id="btn-home">Home</a>
-        <a href="#sam" class="nav-btn" id="btn-sam">Sam</a>
-        <a href="#nicole" class="nav-btn" id="btn-nicole">Nicole</a>
-        <a href="#millie" class="nav-btn" id="btn-millie">Millie</a>
-        <a href="#jules" class="nav-btn" id="btn-jules">Jules</a>
-        <a href="#eve" class="nav-btn" id="btn-eve">Eve</a>
+        <div id="dynamic-nav-container"></div>
     </nav>
 
-    <div class="main-content">
+    <div class="main-content" id="main-content">
         
         <div id="home" class="tab-content">
             <h1>Blessed are the Peacemakers</h1>
@@ -236,273 +231,215 @@
             </div>
         </div>
 
-        <div id="sam" class="tab-content">
-            <h1>Sam's Goals</h1>
-            <div class="goals-grid">
-                <div class="quadrant social">
-                    <h3>👥 Social</h3>
-                    <ul>
-                        <li><input type="checkbox"> Daddy daughter date every month</li>
-                        <li class="sub-task"><input type="checkbox"> January</li>
-                        <li class="sub-task"><input type="checkbox"> February</li>
-                        <li class="sub-task"><input type="checkbox"> March</li>
-                        <li class="sub-task"><input type="checkbox"> April</li>
-                        <li class="sub-task"><input type="checkbox"> May</li>
-                        <li class="sub-task"><input type="checkbox"> June</li>
-                        <li class="sub-task"><input type="checkbox"> July</li>
-                        <li class="sub-task"><input type="checkbox"> August</li>
-                        <li class="sub-task"><input type="checkbox"> September</li>
-                        <li class="sub-task"><input type="checkbox"> October</li>
-                        <li class="sub-task"><input type="checkbox"> November</li>
-                        <li class="sub-task"><input type="checkbox"> December</li>
-                    </ul>
-                </div>
-                <div class="quadrant spiritual">
-                    <h3>🙏 Spiritual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Go to temple quarterly</li>
-                        <li class="sub-task"><input type="checkbox"> Q1</li>
-                        <li class="sub-task"><input type="checkbox"> Q2</li>
-                        <li class="sub-task"><input type="checkbox"> Q3</li>
-                        <li class="sub-task"><input type="checkbox"> Q4</li>
-                        <li><input type="checkbox"> Read New Testament and Book of Mormon</li>
-                    </ul>
-                </div>
-                <div class="quadrant physical">
-                    <h3>🏃 Physical</h3>
-                    <ul>
-                        <li><input type="checkbox"> Jordanelle Olympic Triathlon</li>
-                        <li><input type="checkbox"> Century Ride</li>
-                        <li><input type="checkbox"> 70.3 (Half Ironman)</li>
-                    </ul>
-                </div>
-                <div class="quadrant intellectual">
-                    <h3>🧠 Intellectual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Launch flow meter business with Jason</li>
-                        <li><input type="checkbox"> Finish RV escape room</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="nicole" class="tab-content">
-            <h1>Nicole's Goals</h1>
-            <div class="goals-grid">
-                <div class="quadrant social">
-                    <h3>👥 Social</h3>
-                    <ul>
-                        <li><input type="checkbox"> Go on mommy-daughter date at least 1x/month</li>
-                        <li class="sub-task"><input type="checkbox"> January</li>
-                        <li class="sub-task"><input type="checkbox"> February</li>
-                        <li class="sub-task"><input type="checkbox"> March</li>
-                        <li class="sub-task"><input type="checkbox"> April</li>
-                        <li class="sub-task"><input type="checkbox"> May</li>
-                        <li class="sub-task"><input type="checkbox"> June</li>
-                        <li class="sub-task"><input type="checkbox"> July</li>
-                        <li class="sub-task"><input type="checkbox"> August</li>
-                        <li class="sub-task"><input type="checkbox"> September</li>
-                        <li class="sub-task"><input type="checkbox"> October</li>
-                        <li class="sub-task"><input type="checkbox"> November</li>
-                        <li class="sub-task"><input type="checkbox"> December</li>
-                        <li><input type="checkbox"> Take a trip to Colorado</li>
-                        <li><input type="checkbox"> Hold 1 new event @ Roy Elementary</li>
-                        <li><input type="checkbox"> Invite 5 new parents to join PTA</li>
-                    </ul>
-                </div>
-                <div class="quadrant spiritual">
-                    <h3>🙏 Spiritual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Study the Old Testament 3x/week</li>
-                        <li><input type="checkbox"> Attend the temple quarterly</li>
-                         <li class="sub-task"><input type="checkbox"> Q1</li>
-                        <li class="sub-task"><input type="checkbox"> Q2</li>
-                        <li class="sub-task"><input type="checkbox"> Q3</li>
-                        <li class="sub-task"><input type="checkbox"> Q4</li>
-                        <li><input type="checkbox"> Ministering visits at least 6x</li>
-                    </ul>
-                </div>
-                <div class="quadrant physical">
-                    <h3>🏃 Physical</h3>
-                    <ul>
-                        <li><input type="checkbox"> Exercise 3 days per week</li>
-                        <li><input type="checkbox"> Join a pickleball or tennis league</li>
-                    </ul>
-                </div>
-                <div class="quadrant intellectual">
-                    <h3>🧠 Intellectual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Meet with 2 different legislators</li>
-                        <li><input type="checkbox"> Practice piano 1x per week</li>
-                        <li><input type="checkbox"> Complete 15 CEUs for RD</li>
-                        <li><input type="checkbox"> Give 1 presentation or talk</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="millie" class="tab-content">
-            <h1>Millie's Goals</h1>
-            <div class="goals-grid">
-                <div class="quadrant social">
-                    <h3>👥 Social</h3>
-                    <ul>
-                        <li><input type="checkbox"> Go on at least one daddy daughter date or mommy daughter date once a month</li>
-                        <li class="sub-task"><input type="checkbox"> January</li>
-                        <li class="sub-task"><input type="checkbox"> February</li>
-                        <li class="sub-task"><input type="checkbox"> March</li>
-                        <li class="sub-task"><input type="checkbox"> April</li>
-                        <li class="sub-task"><input type="checkbox"> May</li>
-                        <li class="sub-task"><input type="checkbox"> June</li>
-                        <li class="sub-task"><input type="checkbox"> July</li>
-                        <li class="sub-task"><input type="checkbox"> August</li>
-                        <li class="sub-task"><input type="checkbox"> September</li>
-                        <li class="sub-task"><input type="checkbox"> October</li>
-                        <li class="sub-task"><input type="checkbox"> November</li>
-                        <li class="sub-task"><input type="checkbox"> December</li>
-                    </ul>
-                </div>
-                <div class="quadrant spiritual">
-                    <h3>🙏 Spiritual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Pray every night</li>
-                    </ul>
-                </div>
-                <div class="quadrant physical">
-                    <h3>🏃 Physical</h3>
-                    <ul>
-                        <li><input type="checkbox"> Be outside for at least 1 hour for at least 3 days a week</li>
-                    </ul>
-                </div>
-                <div class="quadrant intellectual">
-                    <h3>🧠 Intellectual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Read at least one chapter book</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="jules" class="tab-content">
-            <h1>Jules's Goals</h1>
-            <div class="goals-grid">
-                <div class="quadrant social">
-                    <h3>👥 Social</h3>
-                    <ul>
-                        <li><input type="checkbox"> Every week play with friend outside</li>
-                        <li><input type="checkbox"> Go on a mommy or daddy daughter date</li>
-                    </ul>
-                </div>
-                <div class="quadrant spiritual">
-                    <h3>🙏 Spiritual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Finish the Book of Mormon</li>
-                    </ul>
-                </div>
-                <div class="quadrant physical">
-                    <h3>🏃 Physical</h3>
-                    <ul>
-                        <li><input type="checkbox"> Try a fifteen mile bike ride with dad</li>
-                    </ul>
-                </div>
-                <div class="quadrant intellectual">
-                    <h3>🧠 Intellectual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Memorize the young women’s theme</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="eve" class="tab-content">
-            <h1>Eve's Goals</h1>
-            <div class="goals-grid">
-                <div class="quadrant social">
-                    <h3>👥 Social</h3>
-                    <ul><li>No goals listed yet</li></ul>
-                </div>
-                <div class="quadrant spiritual">
-                    <h3>🙏 Spiritual</h3>
-                    <ul><li>No goals listed yet</li></ul>
-                </div>
-                <div class="quadrant physical">
-                    <h3>🏃 Physical</h3>
-                    <ul>
-                        <li><input type="checkbox"> Soccer</li>
-                    </ul>
-                </div>
-                <div class="quadrant intellectual">
-                    <h3>🧠 Intellectual</h3>
-                    <ul>
-                        <li><input type="checkbox"> Finish upstart</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <div id="loading">Loading Goals from Markdown...</div>
 
     </div>
 
     <script>
-        function switchTab(personId) {
-            // 1. Hide all contents
-            var contents = document.getElementsByClassName("tab-content");
-            for (var i = 0; i < contents.length; i++) {
-                contents[i].style.display = "none";
-                contents[i].classList.remove("active");
-            }
+        // ---------------------------------------------------------
+        // 1. FETCH AND PARSE MARKDOWN
+        // ---------------------------------------------------------
+        async function loadGoals() {
+            try {
+                // Fetch the markdown file. We add a timestamp to prevent browser caching issues.
+                const response = await fetch('familygoals.md?t=' + new Date().getTime());
+                
+                if (!response.ok) {
+                    throw new Error("Could not find familygoals.md");
+                }
+                
+                const text = await response.text();
+                parseMarkdown(text);
 
-            // 2. Remove active class from buttons
-            var buttons = document.getElementsByClassName("nav-btn");
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
-
-            // 3. Show the selected content
-            var selectedContent = document.getElementById(personId);
-            if (selectedContent) {
-                selectedContent.style.display = "block";
-                setTimeout(() => selectedContent.classList.add("active"), 10);
-            }
-
-            // 4. Highlight the selected button
-            var selectedBtn = document.getElementById("btn-" + personId);
-            if (selectedBtn) {
-                selectedBtn.classList.add("active");
-            }
-
-            if (window.innerWidth <= 768) {
-                closeMenu();
+            } catch (error) {
+                document.getElementById('loading').innerHTML = "Error loading goals: " + error.message + "<br>Make sure familygoals.md is in the same folder.";
             }
         }
 
-        window.addEventListener('hashchange', function() {
-            var hash = window.location.hash.substring(1);
-            if (hash) {
-                switchTab(hash);
-            } else {
-                switchTab('home');
-            }
-        });
+        function parseMarkdown(markdown) {
+            const lines = markdown.split('\n');
+            const people = {};
+            let currentPerson = null;
+            let currentCategory = null;
 
-        document.addEventListener("DOMContentLoaded", function() {
-            var hash = window.location.hash.substring(1);
+            // --- PARSING LOGIC ---
+            lines.forEach(line => {
+                // Remove [cite] tags if they exist
+                let cleanLine = line.replace(/\/g, '').replace(/\[cite_start\]/g, '').trimRight();
+
+                // 1. Detect Person (## Name)
+                if (cleanLine.startsWith('## ')) {
+                    currentPerson = cleanLine.replace('## ', '').trim();
+                    people[currentPerson] = {
+                        Social: [], Spiritual: [], Physical: [], Intellectual: []
+                    };
+                    currentCategory = null; 
+                }
+                // 2. Detect Category (### Category)
+                else if (cleanLine.startsWith('### ')) {
+                    currentCategory = cleanLine.replace('### ', '').trim();
+                }
+                // 3. Detect Main Goal (- [ ] Goal)
+                else if (cleanLine.trim().startsWith('- [ ]') || cleanLine.trim().startsWith('- [x]')) {
+                    const isChecked = cleanLine.trim().startsWith('- [x]');
+                    const goalText = cleanLine.replace('- [ ]', '').replace('- [x]', '').trim();
+                    
+                    // Check indentation to see if it's a sub-task
+                    // If line starts with 4 spaces or a tab, it's a sub-task
+                    if (cleanLine.startsWith('    ') || cleanLine.startsWith('\t')) {
+                        // Add to the LAST goal added to the current category
+                        if (currentPerson && currentCategory) {
+                            const goalsList = people[currentPerson][currentCategory];
+                            if (goalsList.length > 0) {
+                                goalsList[goalsList.length - 1].subTasks.push({ text: goalText, checked: isChecked });
+                            }
+                        }
+                    } else {
+                        // It is a main goal
+                        if (currentPerson && currentCategory && people[currentPerson][currentCategory]) {
+                            people[currentPerson][currentCategory].push({ text: goalText, checked: isChecked, subTasks: [] });
+                        }
+                    }
+                }
+            });
+
+            renderGoals(people);
+        }
+
+        // ---------------------------------------------------------
+        // 2. RENDER HTML
+        // ---------------------------------------------------------
+        function renderGoals(people) {
+            const navContainer = document.getElementById('dynamic-nav-container');
+            const mainContainer = document.getElementById('main-content');
+            const loadingDiv = document.getElementById('loading');
+            
+            // Clear loading message
+            loadingDiv.style.display = 'none';
+
+            // Loop through each person found in the markdown
+            for (const personName in people) {
+                const safeId = personName.toLowerCase().replace(/\s+/g, '-');
+
+                // 1. Create Sidebar Link
+                const link = document.createElement('a');
+                link.href = '#' + safeId;
+                link.className = 'nav-btn';
+                link.id = 'btn-' + safeId;
+                link.textContent = personName;
+                navContainer.appendChild(link);
+
+                // 2. Create Content Div
+                const contentDiv = document.createElement('div');
+                contentDiv.id = safeId;
+                contentDiv.className = 'tab-content';
+                
+                // Build the inner HTML
+                let html = `<h1>${personName}'s Goals</h1><div class="goals-grid">`;
+
+                // Loop through 4 Quadrants
+                const categories = ['Social', 'Spiritual', 'Physical', 'Intellectual'];
+                categories.forEach(cat => {
+                    // Define icon mapping
+                    let icon = '';
+                    if(cat === 'Social') icon = '👥';
+                    if(cat === 'Spiritual') icon = '🙏';
+                    if(cat === 'Physical') icon = '🏃';
+                    if(cat === 'Intellectual') icon = '🧠';
+
+                    html += `
+                    <div class="quadrant ${cat}">
+                        <h3>${icon} ${cat}</h3>
+                        <ul>`;
+                    
+                    // Add Goals
+                    const goals = people[personName][cat] || [];
+                    if (goals.length === 0) {
+                        html += `<li>No goals listed</li>`;
+                    } else {
+                        goals.forEach(goal => {
+                            const checked = goal.checked ? 'checked' : '';
+                            html += `<li><input type="checkbox" ${checked}> ${goal.text}</li>`;
+                            
+                            // Add Sub-tasks (Months/Quarters)
+                            if (goal.subTasks.length > 0) {
+                                goal.subTasks.forEach(sub => {
+                                    const subChecked = sub.checked ? 'checked' : '';
+                                    html += `<li class="sub-task"><input type="checkbox" ${subChecked}> ${sub.text}</li>`;
+                                });
+                            }
+                        });
+                    }
+                    html += `</ul></div>`;
+                });
+
+                html += `</div>`; // Close grid
+                contentDiv.innerHTML = html;
+                mainContainer.appendChild(contentDiv);
+            }
+
+            // Initialize routing after rendering is done
+            handleRouting();
+        }
+
+        // ---------------------------------------------------------
+        // 3. TAB LOGIC & ROUTING
+        // ---------------------------------------------------------
+        function switchTab(personId) {
+            // Hide all tabs
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].style.display = "none";
+                contents[i].classList.remove("active");
+            }
+            // Deactivate sidebar buttons
+            const buttons = document.getElementsByClassName("nav-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+
+            // Show target
+            const target = document.getElementById(personId);
+            if (target) {
+                target.style.display = "block";
+                setTimeout(() => target.classList.add("active"), 10);
+            }
+            
+            // Activate button
+            const btn = document.getElementById("btn-" + personId);
+            if (btn) btn.classList.add("active");
+
+            // Close mobile menu
+            if (window.innerWidth <= 768) closeMenu();
+        }
+
+        function handleRouting() {
+            const hash = window.location.hash.substring(1);
             if (hash) {
                 switchTab(hash);
             } else {
                 history.replaceState(null, null, '#home');
                 switchTab('home');
             }
+        }
+
+        window.addEventListener('hashchange', function() {
+            switchTab(window.location.hash.substring(1));
         });
 
+        // Mobile Menu
         function toggleMenu() {
             document.getElementById("sidebar").classList.toggle("open");
             document.querySelector(".overlay").classList.toggle("active");
         }
-
         function closeMenu() {
             document.getElementById("sidebar").classList.remove("open");
             document.querySelector(".overlay").classList.remove("active");
         }
+
+        // START APP
+        document.addEventListener("DOMContentLoaded", loadGoals);
+
     </script>
 </body>
 </html>
