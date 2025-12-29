@@ -3,9 +3,25 @@
 ## Sam
 ### Social
 - [ ] Daddy daughter date every month
+    - [ ] January
+    - [ ] February
+    - [ ] March
+    - [ ] April
+    - [ ] May
+    - [ ] June
+    - [ ] July
+    - [ ] August
+    - [ ] September
+    - [ ] October
+    - [ ] November
+    - [ ] December
 
 ### Spiritual
 - [ ] Go to temple quarterly
+    - [ ] Q1
+    - [ ] Q2
+    - [ ] Q3
+    - [ ] Q4
 - [ ] Read New Testament and Book of Mormon
 
 ### Physical
@@ -22,6 +38,18 @@
 ## Nicole
 ### Social
 - [ ] Go on mommy-daughter date at least 1x/month
+    - [ ] January
+    - [ ] February
+    - [ ] March
+    - [ ] April
+    - [ ] May
+    - [ ] June
+    - [ ] July
+    - [ ] August
+    - [ ] September
+    - [ ] October
+    - [ ] November
+    - [ ] December
 - [ ] Take a trip to Colorado
 - [ ] Hold 1 new event @ Roy Elementary
 - [ ] Invite 5 new parents to join PTA
@@ -29,6 +57,10 @@
 ### Spiritual
 - [ ] Study the Old Testament 3x/week
 - [ ] Attend the temple quarterly
+    - [ ] Q1
+    - [ ] Q2
+    - [ ] Q3
+    - [ ] Q4
 - [ ] Ministering visits at least 6x
 
 ### Physical
@@ -46,6 +78,18 @@
 ## Millie
 ### Social
 - [ ] Go on at least one daddy daughter date or mommy daughter date once a month
+    - [ ] January
+    - [ ] February
+    - [ ] March
+    - [ ] April
+    - [ ] May
+    - [ ] June
+    - [ ] July
+    - [ ] August
+    - [ ] September
+    - [ ] October
+    - [ ] November
+    - [ ] December
 
 ### Spiritual
 - [ ] Pray every night
