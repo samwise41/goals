@@ -54,6 +54,9 @@
             cursor: pointer;
             transition: background 0.2s;
             width: 100%;
+            text-decoration: none; /* Make links look like buttons */
+            display: block;
+            box-sizing: border-box;
         }
 
         .nav-btn:hover {
@@ -93,7 +96,7 @@
         /* --- Quadrant Grid Layout --- */
         .goals-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Two columns */
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
@@ -105,18 +108,14 @@
             border-top: 5px solid var(--accent-color);
         }
 
-        /* Color coding the quadrants (optional visual flair) */
-        .quadrant.social { border-top-color: #e74c3c; }      /* Red */
-        .quadrant.spiritual { border-top-color: #f1c40f; }   /* Yellow */
-        .quadrant.physical { border-top-color: #2ecc71; }    /* Green */
-        .quadrant.intellectual { border-top-color: #9b59b6; }/* Purple */
+        .quadrant.social { border-top-color: #e74c3c; }      
+        .quadrant.spiritual { border-top-color: #f1c40f; }   
+        .quadrant.physical { border-top-color: #2ecc71; }    
+        .quadrant.intellectual { border-top-color: #9b59b6; }
 
         .quadrant h3 {
             margin-top: 0;
             color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
         }
@@ -173,7 +172,7 @@
             }
 
             .goals-grid {
-                grid-template-columns: 1fr; /* Stack vertically on mobile */
+                grid-template-columns: 1fr;
             }
 
             .hamburger { display: block; }
@@ -193,16 +192,16 @@
 
     <nav class="sidebar" id="sidebar">
         <h2>Family Goals</h2>
-        <button class="nav-btn active" onclick="openTab(event, 'sam')">Sam</button>
-        <button class="nav-btn" onclick="openTab(event, 'nicole')">Nicole</button>
-        <button class="nav-btn" onclick="openTab(event, 'millie')">Millie</button>
-        <button class="nav-btn" onclick="openTab(event, 'jules')">Jules</button>
-        <button class="nav-btn" onclick="openTab(event, 'eve')">Eve</button>
+        <a href="#sam" class="nav-btn" id="btn-sam">Sam</a>
+        <a href="#nicole" class="nav-btn" id="btn-nicole">Nicole</a>
+        <a href="#millie" class="nav-btn" id="btn-millie">Millie</a>
+        <a href="#jules" class="nav-btn" id="btn-jules">Jules</a>
+        <a href="#eve" class="nav-btn" id="btn-eve">Eve</a>
     </nav>
 
     <div class="main-content">
         
-        <div id="sam" class="tab-content active">
+        <div id="sam" class="tab-content">
             <h1>Sam's Goals</h1>
             <div class="goals-grid">
                 <div class="quadrant social">
@@ -365,30 +364,63 @@
     </div>
 
     <script>
-        function openTab(evt, personName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove("active");
+        // Function to handle tab switching based on ID
+        function switchTab(personId) {
+            // 1. Hide all contents
+            var contents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].style.display = "none";
+                contents[i].classList.remove("active");
             }
 
-            tablinks = document.getElementsByClassName("nav-btn");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            // 2. Remove active class from buttons
+            var buttons = document.getElementsByClassName("nav-btn");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
             }
 
-            document.getElementById(personName).style.display = "block";
-            setTimeout(() => {
-                document.getElementById(personName).classList.add("active");
-            }, 10);
-            evt.currentTarget.className += " active";
+            // 3. Show the selected content
+            var selectedContent = document.getElementById(personId);
+            if (selectedContent) {
+                selectedContent.style.display = "block";
+                setTimeout(() => selectedContent.classList.add("active"), 10);
+            }
 
+            // 4. Highlight the selected button
+            var selectedBtn = document.getElementById("btn-" + personId);
+            if (selectedBtn) {
+                selectedBtn.classList.add("active");
+            }
+
+            // 5. Mobile behavior: Close menu if open
             if (window.innerWidth <= 768) {
                 closeMenu();
             }
         }
 
+        // Logic to run when the URL hash changes (e.g., user clicks back button or a link)
+        window.addEventListener('hashchange', function() {
+            var hash = window.location.hash.substring(1); // remove the '#'
+            if (hash) {
+                switchTab(hash);
+            } else {
+                switchTab('sam'); // Default if hash is empty
+            }
+        });
+
+        // Initial check on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            var hash = window.location.hash.substring(1);
+            if (hash) {
+                switchTab(hash);
+            } else {
+                // If no hash, set default to Sam and update URL without reloading
+                history.replaceState(null, null, '#sam');
+                switchTab('sam');
+            }
+        });
+
+        // Mobile Menu Toggles
         function toggleMenu() {
             document.getElementById("sidebar").classList.toggle("open");
             document.querySelector(".overlay").classList.toggle("active");
