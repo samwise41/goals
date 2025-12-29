@@ -264,40 +264,54 @@
 
             // --- PARSING LOGIC ---
             lines.forEach(line => {
-                // Remove [cite] tags if they exist
-                let cleanLine = line.replace(/\/g, '').replace(/\[cite_start\]/g, '').trimRight();
-
+                const rawLine = line;
+                
                 // 1. Detect Person (## Name)
-                if (cleanLine.startsWith('## ')) {
-                    currentPerson = cleanLine.replace('## ', '').trim();
+                if (rawLine.trim().startsWith('## ')) {
+                    currentPerson = rawLine.replace('## ', '').trim();
                     people[currentPerson] = {
                         Social: [], Spiritual: [], Physical: [], Intellectual: []
                     };
                     currentCategory = null; 
                 }
                 // 2. Detect Category (### Category)
-                else if (cleanLine.startsWith('### ')) {
-                    currentCategory = cleanLine.replace('### ', '').trim();
+                else if (rawLine.trim().startsWith('### ')) {
+                    currentCategory = rawLine.replace('### ', '').trim();
                 }
-                // 3. Detect Main Goal (- [ ] Goal)
-                else if (cleanLine.trim().startsWith('- [ ]') || cleanLine.trim().startsWith('- [x]')) {
-                    const isChecked = cleanLine.trim().startsWith('- [x]');
-                    const goalText = cleanLine.replace('- [ ]', '').replace('- [x]', '').trim();
-                    
-                    // Check indentation to see if it's a sub-task
-                    // If line starts with 4 spaces or a tab, it's a sub-task
-                    if (cleanLine.startsWith('    ') || cleanLine.startsWith('\t')) {
-                        // Add to the LAST goal added to the current category
-                        if (currentPerson && currentCategory) {
-                            const goalsList = people[currentPerson][currentCategory];
-                            if (goalsList.length > 0) {
+                // 3. Detect Goals and Sub-goals
+                else {
+                    // Regex looks for: 
+                    // Group 1: Leading whitespace (indentation)
+                    // Group 2: The checkbox status [ ] or [x]
+                    // Group 3: The actual text content
+                    const taskMatch = rawLine.match(/^(\s*)-\s*\[([ xX])\]\s*(.*)/);
+
+                    if (taskMatch) {
+                        const indentation = taskMatch[1].length; // How many spaces/tabs at start?
+                        const isChecked = taskMatch[2].toLowerCase() === 'x';
+                        let goalText = taskMatch[3];
+
+                        // --- Clean text more aggressively ---
+                        // Removes [cite_start],[cite: 16], etc.
+                        goalText = goalText.replace(/\[cite_start\]/gi, '')
+                                           .replace(/\/g, '')
+                                           .trim();
+
+                        // Logic: If indentation is 2 or more spaces (or a tab), it's a Sub-task
+                        // This fixes the issue where 2 spaces vs 4 spaces caused bugs
+                        const isSubTask = indentation >= 2;
+
+                        if (isSubTask) {
+                            // Add to the LAST goal added to the current category
+                            if (currentPerson && currentCategory && people[currentPerson][currentCategory].length > 0) {
+                                const goalsList = people[currentPerson][currentCategory];
                                 goalsList[goalsList.length - 1].subTasks.push({ text: goalText, checked: isChecked });
                             }
-                        }
-                    } else {
-                        // It is a main goal
-                        if (currentPerson && currentCategory && people[currentPerson][currentCategory]) {
-                            people[currentPerson][currentCategory].push({ text: goalText, checked: isChecked, subTasks: [] });
+                        } else {
+                            // It is a Main Goal
+                            if (currentPerson && currentCategory && people[currentPerson][currentCategory]) {
+                                people[currentPerson][currentCategory].push({ text: goalText, checked: isChecked, subTasks: [] });
+                            }
                         }
                     }
                 }
