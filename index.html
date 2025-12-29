@@ -11,6 +11,7 @@
             --text-color: #333;
             --bg-color: #f4f4f9;
             --sidebar-width: 250px;
+            --card-bg: #fff;
         }
 
         body {
@@ -73,36 +74,68 @@
         }
 
         .tab-content {
-            display: none; /* Hidden by default */
-            max-width: 800px;
+            display: none;
+            max-width: 1000px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .tab-content.active {
-            display: block; /* Show active tab */
+            display: block;
             animation: fadeIn 0.3s ease-in;
         }
 
-        h1 { border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
-        h3 { color: var(--primary-color); margin-top: 25px; }
+        h1 { 
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        /* --- Quadrant Grid Layout --- */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns */
+            gap: 20px;
+        }
+
+        .quadrant {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--accent-color);
+        }
+
+        /* Color coding the quadrants (optional visual flair) */
+        .quadrant.social { border-top-color: #e74c3c; }      /* Red */
+        .quadrant.spiritual { border-top-color: #f1c40f; }   /* Yellow */
+        .quadrant.physical { border-top-color: #2ecc71; }    /* Green */
+        .quadrant.intellectual { border-top-color: #9b59b6; }/* Purple */
+
+        .quadrant h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
         
         ul { list-style-type: none; padding: 0; }
         li {
             padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f9f9f9;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            line-height: 1.4;
         }
         
-        /* Custom Checkbox Style */
         input[type="checkbox"] {
             margin-right: 12px;
-            transform: scale(1.2);
+            margin-top: 3px;
+            transform: scale(1.1);
             accent-color: var(--accent-color);
+            flex-shrink: 0;
         }
 
         /* --- Mobile Hamburger Menu --- */
@@ -131,26 +164,20 @@
 
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%); /* Hide sidebar off-screen */
-            }
-
-            .sidebar.open {
-                transform: translateX(0); /* Slide in */
-            }
-
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            
             .main-content {
                 margin-left: 0;
                 padding: 60px 20px 20px 20px;
             }
 
-            .hamburger {
-                display: block;
+            .goals-grid {
+                grid-template-columns: 1fr; /* Stack vertically on mobile */
             }
 
-            .overlay.active {
-                display: block;
-            }
+            .hamburger { display: block; }
+            .overlay.active { display: block; }
         }
 
         @keyframes fadeIn {
@@ -162,7 +189,6 @@
 <body>
 
     <button class="hamburger" onclick="toggleMenu()">☰</button>
-    
     <div class="overlay" onclick="closeMenu()"></div>
 
     <nav class="sidebar" id="sidebar">
@@ -178,113 +204,168 @@
         
         <div id="sam" class="tab-content active">
             <h1>Sam's Goals</h1>
-            
-            <h3>Social</h3>
-            <ul><li><input type="checkbox"> Daddy daughter date every month</li></ul>
-
-            <h3>Spiritual</h3>
-            <ul>
-                <li><input type="checkbox"> Go to temple quarterly</li>
-                <li><input type="checkbox"> Read New Testament and Book of Mormon</li>
-            </ul>
-
-            <h3>Physical</h3>
-            <ul>
-                <li><input type="checkbox"> Jordanelle Olympic Triathlon</li>
-                <li><input type="checkbox"> Century Ride</li>
-                <li><input type="checkbox"> 70.3 (Half Ironman)</li>
-            </ul>
-
-            <h3>Intellectual</h3>
-            <ul>
-                <li><input type="checkbox"> Launch flow meter business with Jason</li>
-                <li><input type="checkbox"> Finish RV escape room</li>
-            </ul>
+            <div class="goals-grid">
+                <div class="quadrant social">
+                    <h3>👥 Social</h3>
+                    <ul>
+                        <li><input type="checkbox"> Daddy daughter date every month</li>
+                    </ul>
+                </div>
+                <div class="quadrant spiritual">
+                    <h3>🙏 Spiritual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Go to temple quarterly</li>
+                        <li><input type="checkbox"> Read New Testament and Book of Mormon</li>
+                    </ul>
+                </div>
+                <div class="quadrant physical">
+                    <h3>🏃 Physical</h3>
+                    <ul>
+                        <li><input type="checkbox"> Jordanelle Olympic Triathlon</li>
+                        <li><input type="checkbox"> Century Ride</li>
+                        <li><input type="checkbox"> 70.3 (Half Ironman)</li>
+                    </ul>
+                </div>
+                <div class="quadrant intellectual">
+                    <h3>🧠 Intellectual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Launch flow meter business with Jason</li>
+                        <li><input type="checkbox"> Finish RV escape room</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div id="nicole" class="tab-content">
             <h1>Nicole's Goals</h1>
-            
-            <h3>Social</h3>
-            <ul>
-                <li><input type="checkbox"> Go on mommy-daughter date at least 1x/month</li>
-                <li><input type="checkbox"> Take a trip to Colorado</li>
-                <li><input type="checkbox"> Hold 1 new event @ Roy Elementary</li>
-                <li><input type="checkbox"> Invite 5 new parents to join PTA</li>
-            </ul>
-
-            <h3>Spiritual</h3>
-            <ul>
-                <li><input type="checkbox"> Study the Old Testament 3x/week</li>
-                <li><input type="checkbox"> Attend the temple quarterly</li>
-                <li><input type="checkbox"> Ministering visits at least 6x</li>
-            </ul>
-
-            <h3>Physical</h3>
-            <ul>
-                <li><input type="checkbox"> Exercise 3 days per week</li>
-                <li><input type="checkbox"> Join a pickleball or tennis league</li>
-            </ul>
-
-            <h3>Intellectual</h3>
-            <ul>
-                <li><input type="checkbox"> Meet with 2 different legislators</li>
-                <li><input type="checkbox"> Practice piano 1x per week</li>
-                <li><input type="checkbox"> Complete 15 CEUs for RD</li>
-                <li><input type="checkbox"> Give 1 presentation or talk</li>
-            </ul>
+            <div class="goals-grid">
+                <div class="quadrant social">
+                    <h3>👥 Social</h3>
+                    <ul>
+                        <li><input type="checkbox"> Go on mommy-daughter date at least 1x/month</li>
+                        <li><input type="checkbox"> Take a trip to Colorado</li>
+                        <li><input type="checkbox"> Hold 1 new event @ Roy Elementary</li>
+                        <li><input type="checkbox"> Invite 5 new parents to join PTA</li>
+                    </ul>
+                </div>
+                <div class="quadrant spiritual">
+                    <h3>🙏 Spiritual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Study the Old Testament 3x/week</li>
+                        <li><input type="checkbox"> Attend the temple quarterly</li>
+                        <li><input type="checkbox"> Ministering visits at least 6x</li>
+                    </ul>
+                </div>
+                <div class="quadrant physical">
+                    <h3>🏃 Physical</h3>
+                    <ul>
+                        <li><input type="checkbox"> Exercise 3 days per week</li>
+                        <li><input type="checkbox"> Join a pickleball or tennis league</li>
+                    </ul>
+                </div>
+                <div class="quadrant intellectual">
+                    <h3>🧠 Intellectual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Meet with 2 different legislators</li>
+                        <li><input type="checkbox"> Practice piano 1x per week</li>
+                        <li><input type="checkbox"> Complete 15 CEUs for RD</li>
+                        <li><input type="checkbox"> Give 1 presentation or talk</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div id="millie" class="tab-content">
             <h1>Millie's Goals</h1>
-            
-            <h3>Social</h3>
-            <ul><li><input type="checkbox"> Go on at least one daddy daughter date or mommy daughter date once a month</li></ul>
-
-            <h3>Spiritual</h3>
-            <ul><li><input type="checkbox"> Pray every night</li></ul>
-
-            <h3>Physical</h3>
-            <ul><li><input type="checkbox"> Be outside for at least 1 hour for at least 3 days a week</li></ul>
-
-            <h3>Intellectual</h3>
-            <ul><li><input type="checkbox"> Read at least one chapter book</li></ul>
+            <div class="goals-grid">
+                <div class="quadrant social">
+                    <h3>👥 Social</h3>
+                    <ul>
+                        <li><input type="checkbox"> Go on at least one daddy daughter date or mommy daughter date once a month</li>
+                    </ul>
+                </div>
+                <div class="quadrant spiritual">
+                    <h3>🙏 Spiritual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Pray every night</li>
+                    </ul>
+                </div>
+                <div class="quadrant physical">
+                    <h3>🏃 Physical</h3>
+                    <ul>
+                        <li><input type="checkbox"> Be outside for at least 1 hour for at least 3 days a week</li>
+                    </ul>
+                </div>
+                <div class="quadrant intellectual">
+                    <h3>🧠 Intellectual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Read at least one chapter book</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div id="jules" class="tab-content">
             <h1>Jules's Goals</h1>
-            
-            <h3>Social</h3>
-            <ul>
-                <li><input type="checkbox"> Every week play with friend outside</li>
-                <li><input type="checkbox"> Go on a mommy or daddy daughter date</li>
-            </ul>
-
-            <h3>Spiritual</h3>
-            <ul><li><input type="checkbox"> Finish the Book of Mormon</li></ul>
-
-            <h3>Physical</h3>
-            <ul><li><input type="checkbox"> Try a fifteen mile bike ride with dad</li></ul>
-
-            <h3>Intellectual</h3>
-            <ul><li><input type="checkbox"> Memorize the young women’s theme</li></ul>
+            <div class="goals-grid">
+                <div class="quadrant social">
+                    <h3>👥 Social</h3>
+                    <ul>
+                        <li><input type="checkbox"> Every week play with friend outside</li>
+                        <li><input type="checkbox"> Go on a mommy or daddy daughter date</li>
+                    </ul>
+                </div>
+                <div class="quadrant spiritual">
+                    <h3>🙏 Spiritual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Finish the Book of Mormon</li>
+                    </ul>
+                </div>
+                <div class="quadrant physical">
+                    <h3>🏃 Physical</h3>
+                    <ul>
+                        <li><input type="checkbox"> Try a fifteen mile bike ride with dad</li>
+                    </ul>
+                </div>
+                <div class="quadrant intellectual">
+                    <h3>🧠 Intellectual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Memorize the young women’s theme</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div id="eve" class="tab-content">
             <h1>Eve's Goals</h1>
-            
-            <h3>Physical</h3>
-            <ul><li><input type="checkbox"> Soccer</li></ul>
-
-            <h3>Intellectual</h3>
-            <ul><li><input type="checkbox"> Finish upstart</li></ul>
+            <div class="goals-grid">
+                <div class="quadrant social">
+                    <h3>👥 Social</h3>
+                    <ul><li>No goals listed yet</li></ul>
+                </div>
+                <div class="quadrant spiritual">
+                    <h3>🙏 Spiritual</h3>
+                    <ul><li>No goals listed yet</li></ul>
+                </div>
+                <div class="quadrant physical">
+                    <h3>🏃 Physical</h3>
+                    <ul>
+                        <li><input type="checkbox"> Soccer</li>
+                    </ul>
+                </div>
+                <div class="quadrant intellectual">
+                    <h3>🧠 Intellectual</h3>
+                    <ul>
+                        <li><input type="checkbox"> Finish upstart</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
     </div>
 
     <script>
         function openTab(evt, personName) {
-            // Hide all tab content
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tab-content");
             for (i = 0; i < tabcontent.length; i++) {
@@ -292,20 +373,17 @@
                 tabcontent[i].classList.remove("active");
             }
 
-            // Remove active class from all buttons
             tablinks = document.getElementsByClassName("nav-btn");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].className = tablinks[i].className.replace(" active", "");
             }
 
-            // Show the current tab and add active class to button
             document.getElementById(personName).style.display = "block";
             setTimeout(() => {
                 document.getElementById(personName).classList.add("active");
             }, 10);
             evt.currentTarget.className += " active";
 
-            // If on mobile, close menu after selection
             if (window.innerWidth <= 768) {
                 closeMenu();
             }
