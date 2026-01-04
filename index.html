@@ -165,7 +165,7 @@
             transform: scale(1.1);
             accent-color: var(--accent-color);
             flex-shrink: 0;
-            cursor: pointer; /* Enable pointer cursor */
+            cursor: pointer;
         }
 
         /* --- Mobile Hamburger Menu --- */
@@ -192,6 +192,70 @@
             z-index: 900;
         }
 
+        /* --- LOGIN MODAL --- */
+        #login-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--primary-color);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            padding: 20px;
+        }
+
+        #login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        #login-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        #login-box p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        #token-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #token-input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        #login-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #login-btn:hover { background: #2980b9; }
+
         /* --- Loading Spinner --- */
         #loading {
             text-align: center;
@@ -216,6 +280,16 @@
     </style>
 </head>
 <body>
+
+    <div id="login-modal">
+        <div id="login-box">
+            <h2>Family Login</h2>
+            <p>Please enter your GitHub Token to unlock the goals and enable editing.</p>
+            <input type="password" id="token-input" placeholder="ghp_..." autocomplete="off">
+            <button id="login-btn" onclick="attemptLogin()">Unlock</button>
+            <p id="login-msg" style="color: red; margin-top: 10px; display: none;"></p>
+        </div>
+    </div>
 
     <button class="hamburger" onclick="toggleMenu()">☰</button>
     <div class="overlay" onclick="closeMenu()"></div>
@@ -248,12 +322,68 @@
         const FILE_PATH = 'familygoals.md';
 
         // ---------------------------------------------------------
-        // 1. FETCH AND PARSE MARKDOWN
+        // 1. AUTHENTICATION & STARTUP
         // ---------------------------------------------------------
-        async function loadGoals() {
+        document.addEventListener("DOMContentLoaded", checkAuth);
+
+        function checkAuth() {
+            const token = localStorage.getItem('github_pat');
+            if (token) {
+                // Token exists, proceed to load
+                document.getElementById('login-modal').style.display = 'none';
+                loadGoals(token);
+            } else {
+                // No token, show login (it is visible by default via CSS)
+            }
+        }
+
+        async function attemptLogin() {
+            const input = document.getElementById('token-input');
+            const msg = document.getElementById('login-msg');
+            const btn = document.getElementById('login-btn');
+            const token = input.value.trim();
+
+            if (!token) return;
+
+            // Visual feedback
+            btn.disabled = true;
+            btn.textContent = "Verifying...";
+            msg.style.display = 'none';
+
             try {
-                // Fetch the markdown file with a timestamp to avoid cache
-                const response = await fetch(FILE_PATH + '?t=' + new Date().getTime());
+                // Verify token by hitting GitHub API User endpoint
+                const response = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+
+                if (response.ok) {
+                    // Success! Save token and load app
+                    localStorage.setItem('github_pat', token);
+                    document.getElementById('login-modal').style.display = 'none';
+                    loadGoals(token);
+                } else {
+                    throw new Error("Invalid Token");
+                }
+            } catch (err) {
+                msg.textContent = "Invalid Token. Please try again.";
+                msg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = "Unlock";
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 2. FETCH AND PARSE MARKDOWN
+        // ---------------------------------------------------------
+        async function loadGoals(token) {
+            try {
+                // Fetch using the token to ensure we have access (and to test it)
+                const response = await fetch(FILE_PATH + '?t=' + new Date().getTime(), {
+                    // Including headers here is optional if repo is public, 
+                    // but good practice if you ever make it private.
+                    // Note: Fetching raw content via GH Pages URL doesn't use the token,
+                    // but we have validated the token in the step above.
+                });
                 
                 if (!response.ok) {
                     throw new Error("Could not find " + FILE_PATH);
@@ -264,7 +394,7 @@
 
             } catch (error) {
                 document.getElementById('loading').innerHTML = 
-                    `Error loading goals. <br>Ensure '${FILE_PATH}' is in the same folder and you are viewing via GitHub Pages.`;
+                    `Error loading goals. <br>Ensure '${FILE_PATH}' is in the same folder.`;
                 console.error(error);
             }
         }
@@ -275,11 +405,9 @@
             let currentPerson = null;
             let currentCategory = null;
 
-            // Added index to callback to track line numbers
             lines.forEach((line, index) => {
                 const rawLine = line;
                 
-                // 1. Detect Person (## Name)
                 if (rawLine.trim().startsWith('## ')) {
                     currentPerson = rawLine.replace('## ', '').trim();
                     people[currentPerson] = {
@@ -287,11 +415,9 @@
                     };
                     currentCategory = null; 
                 }
-                // 2. Detect Category (### Category)
                 else if (rawLine.trim().startsWith('### ')) {
                     currentCategory = rawLine.replace('### ', '').trim();
                 }
-                // 3. Detect Goals and Sub-goals
                 else {
                     const taskMatch = rawLine.match(/^(\s*)(?:-|\*)\s*\[([ xX])\]\s*(.*)/);
 
@@ -306,7 +432,6 @@
 
                         const isSubTask = indentation >= 2;
                         
-                        // Object structure updated to include lineIndex
                         const goalObj = { 
                             text: goalText, 
                             checked: isChecked, 
@@ -332,16 +457,14 @@
         }
 
         // ---------------------------------------------------------
-        // 2. RENDER HTML
+        // 3. RENDER HTML
         // ---------------------------------------------------------
         function renderGoals(people) {
             const navContainer = document.getElementById('dynamic-nav-container');
             const mainContainer = document.getElementById('main-content');
             const loadingDiv = document.getElementById('loading');
             
-            // Clear previous content to avoid duplicates on reload
             navContainer.innerHTML = '';
-            // Remove old dynamic tabs (keep Home and Loading)
             const oldTabs = document.querySelectorAll('.tab-content:not(#home)');
             oldTabs.forEach(tab => tab.remove());
             
@@ -350,7 +473,6 @@
             for (const personName in people) {
                 const safeId = personName.toLowerCase().replace(/\s+/g, '-');
 
-                // 1. Create Sidebar Link
                 const link = document.createElement('a');
                 link.href = '#' + safeId;
                 link.className = 'nav-btn';
@@ -358,7 +480,6 @@
                 link.textContent = personName;
                 navContainer.appendChild(link);
 
-                // 2. Create Content Div
                 const contentDiv = document.createElement('div');
                 contentDiv.id = safeId;
                 contentDiv.className = 'tab-content';
@@ -384,7 +505,6 @@
                     } else {
                         goals.forEach(goal => {
                             const checked = goal.checked ? 'checked' : '';
-                            // Added onchange handler
                             html += `<li>
                                 <input type="checkbox" ${checked} onchange="toggleGoal(this, ${goal.lineIndex})"> 
                                 ${goal.text}
@@ -393,7 +513,6 @@
                             if (goal.subTasks.length > 0) {
                                 goal.subTasks.forEach(sub => {
                                     const subChecked = sub.checked ? 'checked' : '';
-                                    // Added onchange handler for subtasks
                                     html += `<li class="sub-task">
                                         <input type="checkbox" ${subChecked} onchange="toggleGoal(this, ${sub.lineIndex})"> 
                                         ${sub.text}
@@ -414,29 +533,23 @@
         }
 
         // ---------------------------------------------------------
-        // 3. GITHUB UPDATE LOGIC
+        // 4. GITHUB UPDATE LOGIC
         // ---------------------------------------------------------
         async function toggleGoal(checkbox, lineIndex) {
-            // 1. Get Token from Local Storage
+            // Get Token from Local Storage (we know it exists because of the login screen)
             let token = localStorage.getItem('github_pat');
             
-            // 2. Prompt if missing
             if (!token) {
-                token = prompt("Please enter your GitHub Personal Access Token to update goals:");
-                if (!token) {
-                    alert("A token is required to edit the file.");
-                    checkbox.checked = !checkbox.checked; // Revert checkbox
-                    return;
-                }
-                localStorage.setItem('github_pat', token);
+                alert("Session expired. Please refresh to login.");
+                location.reload();
+                return;
             }
 
-            // Visual feedback
             checkbox.disabled = true;
             document.body.style.cursor = 'wait';
 
             try {
-                // 3. Fetch current file to get SHA (required for update)
+                // Fetch current file to get SHA
                 const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
                 
                 const getResponse = await fetch(apiUrl, {
@@ -449,7 +562,9 @@
                 if (!getResponse.ok) {
                     if (getResponse.status === 401) {
                         localStorage.removeItem('github_pat');
-                        throw new Error("Invalid Token. Please refresh and try again.");
+                        alert("Token expired. Please refresh to login.");
+                        location.reload();
+                        return;
                     }
                     throw new Error('Failed to fetch file info from GitHub.');
                 }
@@ -457,16 +572,14 @@
                 const data = await getResponse.json();
                 const sha = data.sha;
                 
-                // 4. Decode content (Base64 -> String)
-                // Using TextDecoder to handle special characters properly
+                // Decode content (Base64 -> String)
                 const content = new TextDecoder().decode(
                     Uint8Array.from(atob(data.content), c => c.charCodeAt(0))
                 );
                 
                 const lines = content.split('\n');
 
-                // 5. Toggle the specific line
-                // We handle [ ], [x], and [X]
+                // Toggle the specific line
                 let targetLine = lines[lineIndex];
                 if (targetLine.includes('[ ]')) {
                     lines[lineIndex] = targetLine.replace('[ ]', '[x]');
@@ -478,12 +591,12 @@
 
                 const newContent = lines.join('\n');
 
-                // 6. Encode content (String -> Base64)
+                // Encode content (String -> Base64)
                 const newContentBase64 = btoa(
                     String.fromCharCode(...new TextEncoder().encode(newContent))
                 );
 
-                // 7. Push Update (PUT)
+                // Push Update
                 const putResponse = await fetch(apiUrl, {
                     method: 'PUT',
                     headers: {
@@ -512,7 +625,7 @@
         }
 
         // ---------------------------------------------------------
-        // 4. TAB LOGIC & ROUTING
+        // 5. TAB LOGIC & ROUTING
         // ---------------------------------------------------------
         function switchTab(personId) {
             const contents = document.getElementsByClassName("tab-content");
@@ -559,8 +672,6 @@
             document.getElementById("sidebar").classList.remove("open");
             document.querySelector(".overlay").classList.remove("active");
         }
-
-        document.addEventListener("DOMContentLoaded", loadGoals);
 
     </script>
 </body>
