@@ -54,6 +54,11 @@
 - [ ] Take a trip to Colorado
 - [ ] Hold 1 new event @ Roy Elementary
 - [ ] Invite 5 new parents to join PTA
+    - [ ] Person 1
+    - [ ] Person 2
+    - [ ] Person 3
+    - [ ] Person 4
+    - [ ] Person 5
 
 ### Spiritual
 - [ ] Study the Old Testament 3x/week
