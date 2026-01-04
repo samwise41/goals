@@ -240,7 +240,7 @@
 ## Millie
 ### Social
 - [ ] Go on at least one daddy daughter date or mommy daughter date once a month
-    - [x] January
+    - [ ] January
     - [ ] February
     - [ ] March
     - [ ] April
