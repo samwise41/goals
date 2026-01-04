@@ -165,7 +165,7 @@
             transform: scale(1.1);
             accent-color: var(--accent-color);
             flex-shrink: 0;
-            pointer-events: none; /* Read only */
+            cursor: pointer; /* Enable pointer cursor */
         }
 
         /* --- Mobile Hamburger Menu --- */
@@ -241,15 +241,22 @@
 
     <script>
         // ---------------------------------------------------------
+        // CONFIGURATION
+        // ---------------------------------------------------------
+        const REPO_OWNER = 'samwise41';
+        const REPO_NAME = 'goals';
+        const FILE_PATH = 'familygoals.md';
+
+        // ---------------------------------------------------------
         // 1. FETCH AND PARSE MARKDOWN
         // ---------------------------------------------------------
         async function loadGoals() {
             try {
                 // Fetch the markdown file with a timestamp to avoid cache
-                const response = await fetch('familygoals.md?t=' + new Date().getTime());
+                const response = await fetch(FILE_PATH + '?t=' + new Date().getTime());
                 
                 if (!response.ok) {
-                    throw new Error("Could not find familygoals.md");
+                    throw new Error("Could not find " + FILE_PATH);
                 }
                 
                 const text = await response.text();
@@ -257,7 +264,7 @@
 
             } catch (error) {
                 document.getElementById('loading').innerHTML = 
-                    `Error loading goals. <br>Ensure 'familygoals.md' is in the same folder and you are viewing via GitHub Pages.`;
+                    `Error loading goals. <br>Ensure '${FILE_PATH}' is in the same folder and you are viewing via GitHub Pages.`;
                 console.error(error);
             }
         }
@@ -268,7 +275,8 @@
             let currentPerson = null;
             let currentCategory = null;
 
-            lines.forEach(line => {
+            // Added index to callback to track line numbers
+            lines.forEach((line, index) => {
                 const rawLine = line;
                 
                 // 1. Detect Person (## Name)
@@ -285,7 +293,6 @@
                 }
                 // 3. Detect Goals and Sub-goals
                 else {
-                    // Regex looks for indentation and checkbox
                     const taskMatch = rawLine.match(/^(\s*)(?:-|\*)\s*\[([ xX])\]\s*(.*)/);
 
                     if (taskMatch) {
@@ -293,24 +300,28 @@
                         const isChecked = taskMatch[2].toLowerCase() === 'x';
                         let goalText = taskMatch[3];
 
-                        // --- Clean text (Remove cite tags) ---
                         goalText = goalText.replace(/\[cite.*?\]/gi, '')
                                            .replace(/\[source.*?\]/gi, '')
                                            .trim();
 
-                        // If indentation is 2 or more spaces, treat as Sub-task
                         const isSubTask = indentation >= 2;
+                        
+                        // Object structure updated to include lineIndex
+                        const goalObj = { 
+                            text: goalText, 
+                            checked: isChecked, 
+                            lineIndex: index,
+                            subTasks: [] 
+                        };
 
                         if (isSubTask) {
-                            // Add to the LAST goal added to the current category
                             if (currentPerson && currentCategory && people[currentPerson][currentCategory].length > 0) {
                                 const goalsList = people[currentPerson][currentCategory];
-                                goalsList[goalsList.length - 1].subTasks.push({ text: goalText, checked: isChecked });
+                                goalsList[goalsList.length - 1].subTasks.push(goalObj);
                             }
                         } else {
-                            // It is a Main Goal
                             if (currentPerson && currentCategory && people[currentPerson][currentCategory]) {
-                                people[currentPerson][currentCategory].push({ text: goalText, checked: isChecked, subTasks: [] });
+                                people[currentPerson][currentCategory].push(goalObj);
                             }
                         }
                     }
@@ -328,10 +339,14 @@
             const mainContainer = document.getElementById('main-content');
             const loadingDiv = document.getElementById('loading');
             
-            // Clear loading message
+            // Clear previous content to avoid duplicates on reload
+            navContainer.innerHTML = '';
+            // Remove old dynamic tabs (keep Home and Loading)
+            const oldTabs = document.querySelectorAll('.tab-content:not(#home)');
+            oldTabs.forEach(tab => tab.remove());
+            
             loadingDiv.style.display = 'none';
 
-            // Loop through each person found in the markdown
             for (const personName in people) {
                 const safeId = personName.toLowerCase().replace(/\s+/g, '-');
 
@@ -348,17 +363,14 @@
                 contentDiv.id = safeId;
                 contentDiv.className = 'tab-content';
                 
-                // Build the inner HTML
                 let html = `<h1>${personName}'s Goals</h1><div class="goals-grid">`;
 
-                // Loop through 4 Quadrants
                 const categories = ['Social', 'Spiritual', 'Physical', 'Intellectual'];
                 categories.forEach(cat => {
-                    // Define icon mapping
                     let icon = '';
                     if(cat === 'Social') icon = '👥';
-                    if(cat === 'Spiritual') icon = '🙏';
-                    if(cat === 'Physical') icon = '🏃';
+                    if(cat === 'Spiritual') icon = '🕊️';
+                    if(cat === 'Physical') icon = '💪';
                     if(cat === 'Intellectual') icon = '🧠';
 
                     html += `
@@ -366,20 +378,26 @@
                         <h3>${icon} ${cat}</h3>
                         <ul>`;
                     
-                    // Add Goals
                     const goals = people[personName][cat] || [];
                     if (goals.length === 0) {
                         html += `<li>No goals listed</li>`;
                     } else {
                         goals.forEach(goal => {
                             const checked = goal.checked ? 'checked' : '';
-                            html += `<li><input type="checkbox" ${checked}> ${goal.text}</li>`;
+                            // Added onchange handler
+                            html += `<li>
+                                <input type="checkbox" ${checked} onchange="toggleGoal(this, ${goal.lineIndex})"> 
+                                ${goal.text}
+                            </li>`;
                             
-                            // Add Sub-tasks (Months/Quarters)
                             if (goal.subTasks.length > 0) {
                                 goal.subTasks.forEach(sub => {
                                     const subChecked = sub.checked ? 'checked' : '';
-                                    html += `<li class="sub-task"><input type="checkbox" ${subChecked}> ${sub.text}</li>`;
+                                    // Added onchange handler for subtasks
+                                    html += `<li class="sub-task">
+                                        <input type="checkbox" ${subChecked} onchange="toggleGoal(this, ${sub.lineIndex})"> 
+                                        ${sub.text}
+                                    </li>`;
                                 });
                             }
                         });
@@ -387,43 +405,135 @@
                     html += `</ul></div>`;
                 });
 
-                html += `</div>`; // Close grid
+                html += `</div>`;
                 contentDiv.innerHTML = html;
                 mainContainer.appendChild(contentDiv);
             }
 
-            // Initialize routing after rendering is done
             handleRouting();
         }
 
         // ---------------------------------------------------------
-        // 3. TAB LOGIC & ROUTING
+        // 3. GITHUB UPDATE LOGIC
+        // ---------------------------------------------------------
+        async function toggleGoal(checkbox, lineIndex) {
+            // 1. Get Token from Local Storage
+            let token = localStorage.getItem('github_pat');
+            
+            // 2. Prompt if missing
+            if (!token) {
+                token = prompt("Please enter your GitHub Personal Access Token to update goals:");
+                if (!token) {
+                    alert("A token is required to edit the file.");
+                    checkbox.checked = !checkbox.checked; // Revert checkbox
+                    return;
+                }
+                localStorage.setItem('github_pat', token);
+            }
+
+            // Visual feedback
+            checkbox.disabled = true;
+            document.body.style.cursor = 'wait';
+
+            try {
+                // 3. Fetch current file to get SHA (required for update)
+                const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+                
+                const getResponse = await fetch(apiUrl, {
+                    headers: { 
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (!getResponse.ok) {
+                    if (getResponse.status === 401) {
+                        localStorage.removeItem('github_pat');
+                        throw new Error("Invalid Token. Please refresh and try again.");
+                    }
+                    throw new Error('Failed to fetch file info from GitHub.');
+                }
+                
+                const data = await getResponse.json();
+                const sha = data.sha;
+                
+                // 4. Decode content (Base64 -> String)
+                // Using TextDecoder to handle special characters properly
+                const content = new TextDecoder().decode(
+                    Uint8Array.from(atob(data.content), c => c.charCodeAt(0))
+                );
+                
+                const lines = content.split('\n');
+
+                // 5. Toggle the specific line
+                // We handle [ ], [x], and [X]
+                let targetLine = lines[lineIndex];
+                if (targetLine.includes('[ ]')) {
+                    lines[lineIndex] = targetLine.replace('[ ]', '[x]');
+                } else if (targetLine.includes('[x]')) {
+                    lines[lineIndex] = targetLine.replace('[x]', '[ ]');
+                } else if (targetLine.includes('[X]')) {
+                    lines[lineIndex] = targetLine.replace('[X]', '[ ]');
+                }
+
+                const newContent = lines.join('\n');
+
+                // 6. Encode content (String -> Base64)
+                const newContentBase64 = btoa(
+                    String.fromCharCode(...new TextEncoder().encode(newContent))
+                );
+
+                // 7. Push Update (PUT)
+                const putResponse = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: `Update goal status via web`,
+                        content: newContentBase64,
+                        sha: sha
+                    })
+                });
+
+                if (!putResponse.ok) throw new Error('Failed to update GitHub file.');
+
+                console.log("Goal updated successfully on GitHub!");
+
+            } catch (error) {
+                console.error(error);
+                alert("Error: " + error.message);
+                checkbox.checked = !checkbox.checked; // Revert visual state
+            } finally {
+                checkbox.disabled = false;
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 4. TAB LOGIC & ROUTING
         // ---------------------------------------------------------
         function switchTab(personId) {
-            // Hide all tabs
             const contents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < contents.length; i++) {
                 contents[i].style.display = "none";
                 contents[i].classList.remove("active");
             }
-            // Deactivate sidebar buttons
             const buttons = document.getElementsByClassName("nav-btn");
             for (let i = 0; i < buttons.length; i++) {
                 buttons[i].classList.remove("active");
             }
 
-            // Show target
             const target = document.getElementById(personId);
             if (target) {
                 target.style.display = "block";
                 setTimeout(() => target.classList.add("active"), 10);
             }
             
-            // Activate button
             const btn = document.getElementById("btn-" + personId);
             if (btn) btn.classList.add("active");
 
-            // Close mobile menu
             if (window.innerWidth <= 768) closeMenu();
         }
 
@@ -441,7 +551,6 @@
             switchTab(window.location.hash.substring(1));
         });
 
-        // Mobile Menu
         function toggleMenu() {
             document.getElementById("sidebar").classList.toggle("open");
             document.querySelector(".overlay").classList.toggle("active");
@@ -451,7 +560,6 @@
             document.querySelector(".overlay").classList.remove("active");
         }
 
-        // START APP
         document.addEventListener("DOMContentLoaded", loadGoals);
 
     </script>
