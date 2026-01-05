@@ -180,7 +180,7 @@
 ### Intellectual
 - [ ] Meet with 2 different legislators
 - [ ] Practice piano 1x per week
-    - [ ] Week 1 (1/3/26)
+    - [x] Week 1 (1/3/26)
     - [ ] Week 2 (1/10/26)
     - [ ] Week 3 (1/17/26)
     - [ ] Week 4 (1/24/26)
