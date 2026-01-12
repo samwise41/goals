@@ -1,3 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Goals</title>
+    
+    <link rel="icon" type="image/png" href="https://github.com/samwise41/goals/blob/main/images.png?raw=true" crossorigin="anonymous">
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-color: #333;
+            --bg-color: #f4f4f9;
+            --sidebar-width: 250px;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn.active {
+            background-color: var(--accent-color);
+            border-left: 5px solid white;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        h1 { 
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        /* --- Hero Image --- */
+        .hero-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- Quadrant Grid Layout --- */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .quadrant {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--accent-color);
+        }
+
+        /* Quadrant Header Colors */
+        .quadrant.Social { border-top-color: #e74c3c; }      
+        .quadrant.Spiritual { border-top-color: #f1c40f; }   
+        .quadrant.Physical { border-top-color: #2ecc71; }    
+        .quadrant.Intellectual { border-top-color: #9b59b6; }
+
+        .quadrant h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        ul { list-style-type: none; padding: 0; }
+        
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f9f9f9;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.4;
+        }
+
+        /* --- Sub-task Styling --- */
+        .sub-task {
+            margin-left: 25px;
+            padding: 4px 0;
+            font-size: 0.95em;
+            color: #555;
+            border-bottom: none;
+        }
+        
+        /* CHECKBOX STYLING */
+        input[type="checkbox"] {
+            margin-right: 12px;
+            margin-top: 3px;
+            transform: scale(1.1);
+            accent-color: var(--accent-color);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        
+        /* --- INLINE TRACKER CHECKBOXES --- */
+        .tracker-check {
+            margin: 0 3px !important;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+            transform: scale(1.0) !important;
+        }
+
+        .goal-text-container {
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* --- Mobile Hamburger Menu --- */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 900;
+        }
+
+        /* --- LOGIN MODAL --- */
+        #login-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--primary-color);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            padding: 20px;
+        }
+
+        #login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        #login-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        #login-box p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        #token-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #token-input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        #login-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #login-btn:hover { background: #2980b9; }
+
+        /* --- Loading Spinner --- */
+        #loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 60px 20px 20px 20px; }
+            .goals-grid { grid-template-columns: 1fr; }
+            .hamburger { display: block; }
+            .overlay.active { display: block; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-modal">
+        <div id="login-box">
+            <h2>Family Login</h2>
+            <p>Please enter your GitHub Token to unlock the goals and enable editing.</p>
+            <input type="password" id="token-input" placeholder="ghp_..." autocomplete="off">
+            <button id="login-btn" onclick="attemptLogin()">Unlock</button>
+            <p id="login-msg" style="color: red; margin-top: 10px; display: none;"></p>
+        </div>
+    </div>
+
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    <div class="overlay" onclick="closeMenu()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <h2>Family Goals</h2>
+        <a href="#home" class="nav-btn" id="btn-home">Home</a>
+        <div id="dynamic-nav-container"></div>
+    </nav>
+
+    <div class="main-content" id="main-content">
+        
+        <div id="home" class="tab-content">
+            <h1>Blessed are the Peacemakers</h1>
+            <div class="hero-image-container">
+                <img src="https://github.com/samwise41/goals/blob/main/Blessed%20are%20the%20Peacemakers.png?raw=true" alt="Blessed are the Peacemakers" class="hero-image">
+            </div>
+        </div>
+
+        <div id="loading">Loading Goals...</div>
+
+    </div>
+
     <script>
         // ---------------------------------------------------------
         // CONFIGURATION
@@ -57,9 +386,14 @@
         async function loadGoals(token) {
             try {
                 const response = await fetch(FILE_PATH + '?t=' + new Date().getTime());
-                if (!response.ok) throw new Error("Could not find " + FILE_PATH);
+                
+                if (!response.ok) {
+                    throw new Error("Could not find " + FILE_PATH);
+                }
+                
                 const text = await response.text();
                 parseMarkdown(text);
+
             } catch (error) {
                 document.getElementById('loading').innerHTML = 
                     `Error loading goals. <br>Ensure '${FILE_PATH}' is in the same folder.`;
@@ -68,68 +402,74 @@
         }
 
         function parseMarkdown(markdown) {
-            const lines = markdown.split('\n');
-            const people = {};
-            let currentPerson = null;
-            let currentCategory = null;
+            try {
+                const lines = markdown.split('\n');
+                const people = {};
+                let currentPerson = null;
+                let currentCategory = null;
 
-            lines.forEach((line, index) => {
-                const rawLine = line;
-                
-                if (rawLine.trim().startsWith('## ')) {
-                    currentPerson = rawLine.replace('## ', '').trim();
-                    people[currentPerson] = { Social: [], Spiritual: [], Physical: [], Intellectual: [] };
-                    currentCategory = null; 
-                }
-                else if (rawLine.trim().startsWith('### ')) {
-                    currentCategory = rawLine.replace('### ', '').trim();
-                }
-                else {
-                    // UPDATED REGEX: Makes the leading checkbox optional
-                    // Group 1: Indent, Group 2: Checkbox State (optional), Group 3: Text
-                    const taskMatch = rawLine.match(/^(\s*)(?:-|\*)\s*(?:\[([ xX])\])?\s*(.*)/);
-
-                    if (taskMatch) {
-                        const indentation = taskMatch[1].length; 
-                        
-                        // Check if a leading checkbox exists
-                        const hasLeadingCheckbox = taskMatch[2] !== undefined;
-                        const isChecked = hasLeadingCheckbox && taskMatch[2].toLowerCase() === 'x';
-                        
-                        let goalText = taskMatch[3];
-                        goalText = goalText.replace(/\[cite.*?\]/gi, '')
-                                           .replace(/\[source.*?\]/gi, '')
-                                           .trim();
-
-                        const isSubTask = indentation >= 2;
-                        
-                        const goalObj = { 
-                            text: goalText, 
-                            hasCheckbox: hasLeadingCheckbox, // Store this for the renderer
-                            checked: isChecked, 
-                            lineIndex: index,
-                            subTasks: [] 
+                lines.forEach((line, index) => {
+                    const rawLine = line;
+                    
+                    if (rawLine.trim().startsWith('## ')) {
+                        currentPerson = rawLine.replace('## ', '').trim();
+                        people[currentPerson] = {
+                            Social: [], Spiritual: [], Physical: [], Intellectual: []
                         };
+                        currentCategory = null; 
+                    }
+                    else if (rawLine.trim().startsWith('### ')) {
+                        currentCategory = rawLine.replace('### ', '').trim();
+                    }
+                    else {
+                        // Regex: Matches indentation, then a bullet (- or *), then OPTIONAL checkbox, then text
+                        const taskMatch = rawLine.match(/^(\s*)(?:-|\*)\s*(?:\[([ xX])\])?\s*(.*)/);
 
-                        if (isSubTask) {
-                            if (currentPerson && currentCategory && people[currentPerson][currentCategory].length > 0) {
-                                const goalsList = people[currentPerson][currentCategory];
-                                goalsList[goalsList.length - 1].subTasks.push(goalObj);
-                            }
-                        } else {
-                            if (currentPerson && currentCategory && people[currentPerson][currentCategory]) {
-                                people[currentPerson][currentCategory].push(goalObj);
+                        if (taskMatch) {
+                            const indentation = taskMatch[1].length; 
+                            const checkboxState = taskMatch[2]; // undefined if no [ ] exists
+                            let goalText = taskMatch[3];
+
+                            goalText = goalText.replace(/\[cite.*?\]/gi, '')
+                                               .replace(/\[source.*?\]/gi, '')
+                                               .trim();
+
+                            const isSubTask = indentation >= 2;
+                            const hasMainCheckbox = (checkboxState !== undefined);
+                            const isChecked = hasMainCheckbox && checkboxState.toLowerCase() === 'x';
+                            
+                            const goalObj = { 
+                                text: goalText, 
+                                hasMainCheckbox: hasMainCheckbox,
+                                checked: isChecked, 
+                                lineIndex: index,
+                                subTasks: [] 
+                            };
+
+                            if (currentPerson && currentCategory) {
+                                const categoryList = people[currentPerson][currentCategory];
+                                if (categoryList) {
+                                    if (isSubTask && categoryList.length > 0) {
+                                        categoryList[categoryList.length - 1].subTasks.push(goalObj);
+                                    } else {
+                                        categoryList.push(goalObj);
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            renderGoals(people);
+                renderGoals(people);
+
+            } catch (e) {
+                console.error(e);
+                alert("Error parsing Markdown: " + e.message);
+            }
         }
 
         // ---------------------------------------------------------
-        // 3. RENDER HTML (UPDATED FOR OPTIONAL MAIN CHECKBOX)
+        // 3. RENDER HTML
         // ---------------------------------------------------------
         function renderGoals(people) {
             const navContainer = document.getElementById('dynamic-nav-container');
@@ -139,45 +479,48 @@
             navContainer.innerHTML = '';
             const oldTabs = document.querySelectorAll('.tab-content:not(#home)');
             oldTabs.forEach(tab => tab.remove());
+            
             loadingDiv.style.display = 'none';
 
-            // Helper to render inline boxes
-            // startIndex tells it whether to start counting at 0 or 1
+            // Function to render inline checkboxes
             function processTextWithCheckboxes(text, lineIndex, startIndex) {
                 let matchCount = startIndex;
+                // Find all [ ] or [x] in the text
                 return text.replace(/\[([ xX])\]/g, (match, state) => {
                     const currentIndex = matchCount; 
-                    matchCount++;
+                    matchCount++; // Increment for next box
                     const checked = state.toLowerCase() === 'x' ? 'checked' : '';
                     return `<input type="checkbox" class="tracker-check" ${checked} onchange="toggleGoal(this, ${lineIndex}, ${currentIndex})">`;
                 });
             }
 
-            // Helper to render a single List Item (Goal or Subtask)
-            function renderItem(goal, isSub) {
-                // If the line has a main checkbox (e.g. "- [ ] Text"), matchIndex for inline items starts at 1
-                // If NO main checkbox (e.g. "- Text"), matchIndex for inline items starts at 0
-                const startIndex = goal.hasCheckbox ? 1 : 0;
+            // Function to build a single list item (Goal or Subtask)
+            function buildListItem(item, isSub) {
+                // If the item has a main checkbox (index 0), then inline boxes start at index 1.
+                // If it has NO main checkbox, inline boxes start at index 0.
+                const nextIndex = item.hasMainCheckbox ? 1 : 0;
                 
-                let prefixHtml = '';
-                if (goal.hasCheckbox) {
-                    const checked = goal.checked ? 'checked' : '';
-                    prefixHtml = `<input type="checkbox" ${checked} onchange="toggleGoal(this, ${goal.lineIndex}, 0)">`;
+                // Process text to turn [ ] into HTML inputs
+                const processedText = processTextWithCheckboxes(item.text, item.lineIndex, nextIndex);
+                
+                let prefix = '';
+                if (item.hasMainCheckbox) {
+                    const checked = item.checked ? 'checked' : '';
+                    prefix = `<input type="checkbox" ${checked} onchange="toggleGoal(this, ${item.lineIndex}, 0)">`;
                 } else {
-                    // Render a bullet if there is no checkbox, to keep it looking like a list
-                    prefixHtml = `<span style="margin-right: 12px; font-weight: bold; color: var(--accent-color);">&bull;</span>`;
+                    // No checkbox -> Show a bullet point style
+                    prefix = `<span style="margin-right:10px; font-weight:bold; color:var(--accent-color);">&bull;</span>`;
                 }
 
-                const processedText = processTextWithCheckboxes(goal.text, goal.lineIndex, startIndex);
-                
                 return `<li class="${isSub ? 'sub-task' : ''}">
-                    ${prefixHtml} 
+                    ${prefix} 
                     <span class="goal-text-container">${processedText}</span>
                 </li>`;
             }
 
             for (const personName in people) {
                 const safeId = personName.toLowerCase().replace(/\s+/g, '-');
+
                 const link = document.createElement('a');
                 link.href = '#' + safeId;
                 link.className = 'nav-btn';
@@ -190,8 +533,8 @@
                 contentDiv.className = 'tab-content';
                 
                 let html = `<h1>${personName}'s Goals</h1><div class="goals-grid">`;
+
                 const categories = ['Social', 'Spiritual', 'Physical', 'Intellectual'];
-                
                 categories.forEach(cat => {
                     let icon = '';
                     if(cat === 'Social') icon = '👥';
@@ -199,17 +542,21 @@
                     if(cat === 'Physical') icon = '💪';
                     if(cat === 'Intellectual') icon = '🧠';
 
-                    html += `<div class="quadrant ${cat}"><h3>${icon} ${cat}</h3><ul>`;
+                    html += `
+                    <div class="quadrant ${cat}">
+                        <h3>${icon} ${cat}</h3>
+                        <ul>`;
                     
                     const goals = people[personName][cat] || [];
                     if (goals.length === 0) {
                         html += `<li>No goals listed</li>`;
                     } else {
                         goals.forEach(goal => {
-                            html += renderItem(goal, false);
+                            html += buildListItem(goal, false);
+                            
                             if (goal.subTasks.length > 0) {
                                 goal.subTasks.forEach(sub => {
-                                    html += renderItem(sub, true);
+                                    html += buildListItem(sub, true);
                                 });
                             }
                         });
@@ -221,6 +568,7 @@
                 contentDiv.innerHTML = html;
                 mainContainer.appendChild(contentDiv);
             }
+
             handleRouting();
         }
 
@@ -229,6 +577,7 @@
         // ---------------------------------------------------------
         async function toggleGoal(checkbox, lineIndex, matchIndex) {
             let token = localStorage.getItem('github_pat');
+            
             if (!token) {
                 alert("Session expired. Please refresh to login.");
                 location.reload();
@@ -239,10 +588,14 @@
             document.body.style.cursor = 'wait';
 
             try {
+                // Fetch current file to get SHA
                 const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
                 
                 const getResponse = await fetch(apiUrl, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    headers: { 
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
                 });
 
                 if (!getResponse.ok) {
@@ -257,16 +610,23 @@
                 
                 const data = await getResponse.json();
                 const sha = data.sha;
-                const content = new TextDecoder().decode(Uint8Array.from(atob(data.content), c => c.charCodeAt(0)));
-                const lines = content.split('\n');
                 
+                const content = new TextDecoder().decode(
+                    Uint8Array.from(atob(data.content), c => c.charCodeAt(0))
+                );
+                
+                const lines = content.split('\n');
                 let targetLine = lines[lineIndex];
+
+                // Logic to update the SPECIFIC checkbox based on matchIndex
                 let occurrence = 0;
+                // Regex matches [ ] or [x] or [X]
                 const regex = /\[([ xX])\]/g;
                 
                 const newLine = targetLine.replace(regex, (match) => {
                     if (occurrence === matchIndex) {
                         occurrence++;
+                        // Toggle logic
                         if (match.includes('[ ]')) return '[x]';
                         return '[ ]';
                     }
@@ -276,7 +636,10 @@
 
                 lines[lineIndex] = newLine;
                 const newContent = lines.join('\n');
-                const newContentBase64 = btoa(String.fromCharCode(...new TextEncoder().encode(newContent)));
+
+                const newContentBase64 = btoa(
+                    String.fromCharCode(...new TextEncoder().encode(newContent))
+                );
 
                 const putResponse = await fetch(apiUrl, {
                     method: 'PUT',
@@ -297,7 +660,7 @@
             } catch (error) {
                 console.error(error);
                 alert("Error: " + error.message);
-                checkbox.checked = !checkbox.checked; 
+                checkbox.checked = !checkbox.checked; // Revert visual state
             } finally {
                 checkbox.disabled = false;
                 document.body.style.cursor = 'default';
@@ -352,4 +715,7 @@
             document.getElementById("sidebar").classList.remove("open");
             document.querySelector(".overlay").classList.remove("active");
         }
+
     </script>
+</body>
+</html>
