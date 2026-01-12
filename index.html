@@ -174,10 +174,10 @@
         .day-check-wrapper {
             display: inline-block;
             position: relative;
-            margin: 0 2px;
+            margin: 0 1px; /* UPDATED: Smaller margin */
             vertical-align: middle;
             cursor: pointer;
-            top: -2px; /* Slight alignment adjust */
+            top: -2px; 
         }
 
         /* Hide the actual ugly browser checkbox */
@@ -194,12 +194,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 24px;
-            height: 24px;
+            width: 20px;  /* UPDATED: Smaller width */
+            height: 20px; /* UPDATED: Smaller height */
             background-color: #f8f9fa;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 11px;
+            border: 1px solid #ccc; /* Thinner border for smaller box */
+            border-radius: 4px;
+            font-size: 10px; /* UPDATED: Smaller font */
             font-weight: bold;
             color: #999;
             transition: all 0.2s ease;
@@ -221,12 +221,12 @@
 
         /* Switch content from Letter to Checkmark when checked */
         .day-check-input:checked ~ .day-check-face span {
-            display: none; /* Hide the S/M/T letter */
+            display: none; 
         }
         
         .day-check-input:checked ~ .day-check-face::after {
             content: '✓';
-            font-size: 14px;
+            font-size: 12px; /* UPDATED: Smaller checkmark */
             font-weight: bold;
         }
 
