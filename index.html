@@ -172,21 +172,20 @@
         .goal-text-container {
             display: flex;
             align-items: center;
-            flex-wrap: wrap; /* Allows wrapping on very small screens */
+            flex-wrap: wrap; 
             width: 100%;
+            gap: 4px;
         }
 
-        /* THIS IS THE FIX: A fixed width column for the "Week X" text */
         .tracker-label {
-            min-width: 115px; 
+            min-width: 110px; 
             display: inline-block;
             font-weight: 500;
         }
 
-        /* A container for the boxes to keep them together */
         .tracker-boxes {
             display: flex;
-            gap: 1px; /* Consistent spacing between boxes */
+            gap: 1px;
         }
 
         /* --- CUSTOM DAY TRACKER BOXES --- */
@@ -204,7 +203,6 @@
             width: 0;
         }
 
-        /* The visual square */
         .day-check-face {
             display: flex;
             justify-content: center;
@@ -264,6 +262,20 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5);
             z-index: 900;
+        }
+
+        /* --- SAVING SPINNER OVERLAY --- */
+        #saving-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
         }
 
         /* --- LOGIN MODAL --- */
@@ -354,6 +366,8 @@
     </style>
 </head>
 <body>
+
+    <div id="saving-overlay">Saving...</div>
 
     <div id="login-modal">
         <div id="login-box">
@@ -482,7 +496,6 @@
                         currentCategory = rawLine.replace('### ', '').trim();
                     }
                     else {
-                        // Regex: Matches indentation, then a bullet (- or *), then OPTIONAL checkbox, then text
                         const taskMatch = rawLine.match(/^(\s*)(?:-|\*)\s*(?:\[([ xX])\])?\s*(.*)/);
 
                         if (taskMatch) {
@@ -542,19 +555,16 @@
             
             loadingDiv.style.display = 'none';
 
-            // Function to render inline checkboxes with Letter Labels (S M T W...)
             function processTextWithCheckboxes(text, lineIndex, startIndex) {
                 let matchCount = startIndex;
-                let dayIndex = 0; // Local counter for this row to determine S, M, T...
+                let dayIndex = 0; 
                 const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-                // Find all [ ] or [x] in the text
                 return text.replace(/\[([ xX])\]/g, (match, state) => {
                     const currentIndex = matchCount; 
-                    matchCount++; // Increment for next box
+                    matchCount++; 
                     const checked = state.toLowerCase() === 'x' ? 'checked' : '';
                     
-                    // Determine which letter to show (Loops S-M-T-W-T-F-S)
                     const dayLabel = days[dayIndex % 7];
                     dayIndex++;
 
@@ -569,21 +579,16 @@
                 });
             }
 
-            // Function to build a single list item (Goal or Subtask)
             function buildListItem(item, isSub) {
                 const nextIndex = item.hasMainCheckbox ? 1 : 0;
                 
-                // --- ALIGNMENT FIX ---
-                // We split the text into "Label" and "Boxes" if brackets are present
+                // Alignment Logic: Split Label from Boxes
                 const firstBracketIndex = item.text.indexOf('[');
                 let processedContent = '';
 
-                // Only apply specific alignment layout if we detect brackets appearing later in the line
-                // (This handles the "Week X: [ ] [ ]" format)
                 if (firstBracketIndex > 0) {
                     const labelText = item.text.substring(0, firstBracketIndex);
                     const boxesText = item.text.substring(firstBracketIndex);
-                    
                     const boxesHtml = processTextWithCheckboxes(boxesText, item.lineIndex, nextIndex);
                     
                     processedContent = `
@@ -591,7 +596,6 @@
                         <span class="tracker-boxes">${boxesHtml}</span>
                     `;
                 } else {
-                    // Fallback for lines without trackers or just plain text
                     processedContent = processTextWithCheckboxes(item.text, item.lineIndex, nextIndex);
                 }
 
@@ -664,7 +668,7 @@
         }
 
         // ---------------------------------------------------------
-        // 4. GITHUB UPDATE LOGIC
+        // 4. GITHUB UPDATE LOGIC (WITH SAVING OVERLAY)
         // ---------------------------------------------------------
         async function toggleGoal(checkbox, lineIndex, matchIndex) {
             let token = localStorage.getItem('github_pat');
@@ -675,8 +679,9 @@
                 return;
             }
 
-            checkbox.disabled = true;
-            document.body.style.cursor = 'wait';
+            // SHOW SAVING SPINNER
+            const overlay = document.getElementById('saving-overlay');
+            overlay.style.display = 'flex';
 
             try {
                 // Fetch current file to get SHA
@@ -711,7 +716,6 @@
 
                 // Logic to update the SPECIFIC checkbox based on matchIndex
                 let occurrence = 0;
-                // Regex matches [ ] or [x] or [X]
                 const regex = /\[([ xX])\]/g;
                 
                 const newLine = targetLine.replace(regex, (match) => {
@@ -739,22 +743,24 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: `Update goal status (index ${matchIndex})`,
+                        message: `Update goal status`,
                         content: newContentBase64,
                         sha: sha
                     })
                 });
 
                 if (!putResponse.ok) throw new Error('Failed to update GitHub file.');
-                console.log("Goal updated successfully on GitHub!");
+                
+                // Success - wait a tiny bit to ensure visual feedback
+                console.log("Goal saved.");
 
             } catch (error) {
                 console.error(error);
-                alert("Error: " + error.message);
+                alert("Error Saving: " + error.message + "\nPlease try again.");
                 checkbox.checked = !checkbox.checked; // Revert visual state
             } finally {
-                checkbox.disabled = false;
-                document.body.style.cursor = 'default';
+                // HIDE OVERLAY
+                overlay.style.display = 'none';
             }
         }
 
