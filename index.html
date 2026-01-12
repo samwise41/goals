@@ -167,6 +167,20 @@
             flex-shrink: 0;
             cursor: pointer;
         }
+        
+        /* --- NEW: Inline Tracker Styling --- */
+        .tracker-check {
+            margin: 0 4px !important; /* Overrides default input margin */
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+            transform: scale(1.0) !important; /* Slightly smaller than main bullets */
+        }
+
+        .goal-text-container {
+            display: inline-block;
+            width: 100%;
+        }
 
         /* --- Mobile Hamburger Menu --- */
         .hamburger {
@@ -381,8 +395,6 @@
                 const response = await fetch(FILE_PATH + '?t=' + new Date().getTime(), {
                     // Including headers here is optional if repo is public, 
                     // but good practice if you ever make it private.
-                    // Note: Fetching raw content via GH Pages URL doesn't use the token,
-                    // but we have validated the token in the step above.
                 });
                 
                 if (!response.ok) {
@@ -457,7 +469,7 @@
         }
 
         // ---------------------------------------------------------
-        // 3. RENDER HTML
+        // 3. RENDER HTML (UPDATED FOR INLINE TRACKERS)
         // ---------------------------------------------------------
         function renderGoals(people) {
             const navContainer = document.getElementById('dynamic-nav-container');
@@ -469,6 +481,20 @@
             oldTabs.forEach(tab => tab.remove());
             
             loadingDiv.style.display = 'none';
+
+            // Helper to turn text brackets [ ] into HTML checkboxes
+            function processTextWithCheckboxes(text, lineIndex) {
+                let matchCount = 0;
+                // Replace [ ] or [x] or [X] with an input element
+                return text.replace(/\[([ xX])\]/g, (match, state) => {
+                    matchCount++;
+                    // The first checkbox on the line is the bullet (index 0), handled outside.
+                    // These internal ones start at index 1.
+                    const currentIndex = matchCount; 
+                    const checked = state.toLowerCase() === 'x' ? 'checked' : '';
+                    return `<input type="checkbox" class="tracker-check" ${checked} onchange="toggleGoal(this, ${lineIndex}, ${currentIndex})">`;
+                });
+            }
 
             for (const personName in people) {
                 const safeId = personName.toLowerCase().replace(/\s+/g, '-');
@@ -505,17 +531,22 @@
                     } else {
                         goals.forEach(goal => {
                             const checked = goal.checked ? 'checked' : '';
+                            // Pass 0 as matchIndex for the main bullet
+                            const processedText = processTextWithCheckboxes(goal.text, goal.lineIndex);
+                            
                             html += `<li>
-                                <input type="checkbox" ${checked} onchange="toggleGoal(this, ${goal.lineIndex})"> 
-                                ${goal.text}
+                                <input type="checkbox" ${checked} onchange="toggleGoal(this, ${goal.lineIndex}, 0)"> 
+                                <span class="goal-text-container">${processedText}</span>
                             </li>`;
                             
                             if (goal.subTasks.length > 0) {
                                 goal.subTasks.forEach(sub => {
                                     const subChecked = sub.checked ? 'checked' : '';
+                                    const subProcessedText = processTextWithCheckboxes(sub.text, sub.lineIndex);
+                                    
                                     html += `<li class="sub-task">
-                                        <input type="checkbox" ${subChecked} onchange="toggleGoal(this, ${sub.lineIndex})"> 
-                                        ${sub.text}
+                                        <input type="checkbox" ${subChecked} onchange="toggleGoal(this, ${sub.lineIndex}, 0)"> 
+                                        <span class="goal-text-container">${subProcessedText}</span>
                                     </li>`;
                                 });
                             }
@@ -533,10 +564,10 @@
         }
 
         // ---------------------------------------------------------
-        // 4. GITHUB UPDATE LOGIC
+        // 4. GITHUB UPDATE LOGIC (UPDATED FOR MULTIPLE BOXES)
         // ---------------------------------------------------------
-        async function toggleGoal(checkbox, lineIndex) {
-            // Get Token from Local Storage (we know it exists because of the login screen)
+        async function toggleGoal(checkbox, lineIndex, matchIndex = 0) {
+            // Get Token from Local Storage
             let token = localStorage.getItem('github_pat');
             
             if (!token) {
@@ -578,17 +609,24 @@
                 );
                 
                 const lines = content.split('\n');
-
-                // Toggle the specific line
+                
+                // Logic to update the specific checkbox (matchIndex) on the target line
                 let targetLine = lines[lineIndex];
-                if (targetLine.includes('[ ]')) {
-                    lines[lineIndex] = targetLine.replace('[ ]', '[x]');
-                } else if (targetLine.includes('[x]')) {
-                    lines[lineIndex] = targetLine.replace('[x]', '[ ]');
-                } else if (targetLine.includes('[X]')) {
-                    lines[lineIndex] = targetLine.replace('[X]', '[ ]');
-                }
+                let occurrence = 0;
+                const regex = /\[([ xX])\]/g;
+                
+                const newLine = targetLine.replace(regex, (match) => {
+                    if (occurrence === matchIndex) {
+                        occurrence++;
+                        // Toggle logic
+                        if (match.includes('[ ]')) return '[x]';
+                        return '[ ]';
+                    }
+                    occurrence++;
+                    return match;
+                });
 
+                lines[lineIndex] = newLine;
                 const newContent = lines.join('\n');
 
                 // Encode content (String -> Base64)
@@ -604,7 +642,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: `Update goal status via web`,
+                        message: `Update goal status (index ${matchIndex})`,
                         content: newContentBase64,
                         sha: sha
                     })
