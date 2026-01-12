@@ -151,7 +151,7 @@
 
         /* --- Sub-task Styling --- */
         .sub-task {
-            margin-left: 25px;
+            margin-left: 15px; /* Reduced indentation slightly for mobile */
             padding: 4px 0;
             font-size: 0.95em;
             color: #555;
@@ -174,7 +174,7 @@
         .day-check-wrapper {
             display: inline-block;
             position: relative;
-            margin: 0 1px; /* UPDATED: Smaller margin */
+            margin: 0 1px; 
             vertical-align: middle;
             cursor: pointer;
             top: -2px; 
@@ -189,17 +189,17 @@
             width: 0;
         }
 
-        /* The visual square */
+        /* The visual square - UPDATED SIZE TO 18px */
         .day-check-face {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 20px;  /* UPDATED: Smaller width */
-            height: 20px; /* UPDATED: Smaller height */
+            width: 18px;  
+            height: 18px; 
             background-color: #f8f9fa;
-            border: 1px solid #ccc; /* Thinner border for smaller box */
+            border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: 10px; /* UPDATED: Smaller font */
+            font-size: 9px;
             font-weight: bold;
             color: #999;
             transition: all 0.2s ease;
@@ -226,7 +226,7 @@
         
         .day-check-input:checked ~ .day-check-face::after {
             content: '✓';
-            font-size: 12px; /* UPDATED: Smaller checkmark */
+            font-size: 11px;
             font-weight: bold;
         }
 
