@@ -158,8 +158,8 @@
             border-bottom: none;
         }
         
-        /* CHECKBOX STYLING */
-        input[type="checkbox"] {
+        /* STANDARD CHECKBOX (For main bullet points) */
+        input[type="checkbox"].main-checkbox {
             margin-right: 12px;
             margin-top: 3px;
             transform: scale(1.1);
@@ -168,13 +168,66 @@
             cursor: pointer;
         }
         
-        /* --- INLINE TRACKER CHECKBOXES --- */
-        .tracker-check {
-            margin: 0 3px !important;
-            vertical-align: middle;
+        /* --- CUSTOM DAY TRACKER BOXES (S M T W...) --- */
+        
+        /* Wrapper for the custom checkbox */
+        .day-check-wrapper {
+            display: inline-block;
             position: relative;
-            top: -1px;
-            transform: scale(1.0) !important;
+            margin: 0 2px;
+            vertical-align: middle;
+            cursor: pointer;
+            top: -2px; /* Slight alignment adjust */
+        }
+
+        /* Hide the actual ugly browser checkbox */
+        .day-check-input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* The visual square */
+        .day-check-face {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            background-color: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        /* Hover state */
+        .day-check-wrapper:hover .day-check-face {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* CHECKED STATE */
+        .day-check-input:checked ~ .day-check-face {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Switch content from Letter to Checkmark when checked */
+        .day-check-input:checked ~ .day-check-face span {
+            display: none; /* Hide the S/M/T letter */
+        }
+        
+        .day-check-input:checked ~ .day-check-face::after {
+            content: '✓';
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .goal-text-container {
@@ -482,15 +535,30 @@
             
             loadingDiv.style.display = 'none';
 
-            // Function to render inline checkboxes
+            // Function to render inline checkboxes with Letter Labels (S M T W...)
             function processTextWithCheckboxes(text, lineIndex, startIndex) {
                 let matchCount = startIndex;
+                let dayIndex = 0; // Local counter for this row to determine S, M, T...
+                const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
                 // Find all [ ] or [x] in the text
                 return text.replace(/\[([ xX])\]/g, (match, state) => {
                     const currentIndex = matchCount; 
                     matchCount++; // Increment for next box
                     const checked = state.toLowerCase() === 'x' ? 'checked' : '';
-                    return `<input type="checkbox" class="tracker-check" ${checked} onchange="toggleGoal(this, ${lineIndex}, ${currentIndex})">`;
+                    
+                    // Determine which letter to show (Loops S-M-T-W-T-F-S)
+                    const dayLabel = days[dayIndex % 7];
+                    dayIndex++;
+
+                    return `
+                    <label class="day-check-wrapper">
+                        <input type="checkbox" class="day-check-input" ${checked} onchange="toggleGoal(this, ${lineIndex}, ${currentIndex})">
+                        <span class="day-check-face">
+                            <span>${dayLabel}</span>
+                        </span>
+                    </label>
+                    `;
                 });
             }
 
@@ -500,13 +568,14 @@
                 // If it has NO main checkbox, inline boxes start at index 0.
                 const nextIndex = item.hasMainCheckbox ? 1 : 0;
                 
-                // Process text to turn [ ] into HTML inputs
+                // Process text to turn [ ] into Styled Day Boxes
                 const processedText = processTextWithCheckboxes(item.text, item.lineIndex, nextIndex);
                 
                 let prefix = '';
                 if (item.hasMainCheckbox) {
                     const checked = item.checked ? 'checked' : '';
-                    prefix = `<input type="checkbox" ${checked} onchange="toggleGoal(this, ${item.lineIndex}, 0)">`;
+                    // Standard Checkbox for the Bullet Point
+                    prefix = `<input type="checkbox" class="main-checkbox" ${checked} onchange="toggleGoal(this, ${item.lineIndex}, 0)">`;
                 } else {
                     // No checkbox -> Show a bullet point style
                     prefix = `<span style="margin-right:10px; font-weight:bold; color:var(--accent-color);">&bull;</span>`;
