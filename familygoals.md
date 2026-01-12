@@ -313,7 +313,7 @@
     - [ ] Week 52 (12/26/26)
 
 ### Intellectual
-- [ ] Read at least one chapter book
+- [ ] Read a chapter book for at least 20 minutes, 4 days a week.
 
 ---
 
