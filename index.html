@@ -145,13 +145,13 @@
             padding: 8px 0;
             border-bottom: 1px solid #f9f9f9;
             display: flex;
-            align-items: flex-start; /* Aligns the bullet to the top of multi-line text */
+            align-items: flex-start;
             line-height: 1.4;
         }
 
         /* --- Sub-task Styling --- */
         .sub-task {
-            margin-left: 15px; 
+            margin-left: 10px; 
             padding: 4px 0;
             font-size: 0.95em;
             color: #555;
@@ -161,32 +161,41 @@
         /* STANDARD CHECKBOX (For main bullet points) */
         input[type="checkbox"].main-checkbox {
             margin-right: 12px;
-            margin-top: 5px; /* Visual alignment with text */
+            margin-top: 5px;
             transform: scale(1.1);
             accent-color: var(--accent-color);
             flex-shrink: 0;
             cursor: pointer;
         }
         
-        /* --- TEXT CONTAINER (The fix for alignment) --- */
+        /* --- GOAL TEXT LAYOUT --- */
         .goal-text-container {
-            display: flex;           /* Enables flexbox alignment */
-            align-items: center;     /* Vertically centers text and boxes */
-            flex-wrap: wrap;         /* Allows boxes to wrap on small screens */
-            gap: 3px;               /* Space between text and boxes */
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; /* Allows wrapping on very small screens */
             width: 100%;
         }
 
-        /* --- CUSTOM DAY TRACKER BOXES (S M T W...) --- */
-        
+        /* THIS IS THE FIX: A fixed width column for the "Week X" text */
+        .tracker-label {
+            min-width: 115px; 
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        /* A container for the boxes to keep them together */
+        .tracker-boxes {
+            display: flex;
+            gap: 1px; /* Consistent spacing between boxes */
+        }
+
+        /* --- CUSTOM DAY TRACKER BOXES --- */
         .day-check-wrapper {
             display: inline-block;
             position: relative;
             cursor: pointer;
-            /* margin/top removed, handled by flex gap */
         }
 
-        /* Hide the actual ugly browser checkbox */
         .day-check-input {
             position: absolute;
             opacity: 0;
@@ -195,7 +204,7 @@
             width: 0;
         }
 
-        /* The visual square - SIZE: 18px */
+        /* The visual square */
         .day-check-face {
             display: flex;
             justify-content: center;
@@ -212,20 +221,17 @@
             user-select: none;
         }
 
-        /* Hover state */
         .day-check-wrapper:hover .day-check-face {
             border-color: var(--accent-color);
             color: var(--accent-color);
         }
 
-        /* CHECKED STATE */
         .day-check-input:checked ~ .day-check-face {
             background-color: var(--accent-color);
             border-color: var(--accent-color);
             color: white;
         }
 
-        /* Switch content from Letter to Checkmark when checked */
         .day-check-input:checked ~ .day-check-face span {
             display: none; 
         }
@@ -565,26 +571,41 @@
 
             // Function to build a single list item (Goal or Subtask)
             function buildListItem(item, isSub) {
-                // If the item has a main checkbox (index 0), then inline boxes start at index 1.
-                // If it has NO main checkbox, inline boxes start at index 0.
                 const nextIndex = item.hasMainCheckbox ? 1 : 0;
                 
-                // Process text to turn [ ] into Styled Day Boxes
-                const processedText = processTextWithCheckboxes(item.text, item.lineIndex, nextIndex);
-                
+                // --- ALIGNMENT FIX ---
+                // We split the text into "Label" and "Boxes" if brackets are present
+                const firstBracketIndex = item.text.indexOf('[');
+                let processedContent = '';
+
+                // Only apply specific alignment layout if we detect brackets appearing later in the line
+                // (This handles the "Week X: [ ] [ ]" format)
+                if (firstBracketIndex > 0) {
+                    const labelText = item.text.substring(0, firstBracketIndex);
+                    const boxesText = item.text.substring(firstBracketIndex);
+                    
+                    const boxesHtml = processTextWithCheckboxes(boxesText, item.lineIndex, nextIndex);
+                    
+                    processedContent = `
+                        <span class="tracker-label">${labelText}</span>
+                        <span class="tracker-boxes">${boxesHtml}</span>
+                    `;
+                } else {
+                    // Fallback for lines without trackers or just plain text
+                    processedContent = processTextWithCheckboxes(item.text, item.lineIndex, nextIndex);
+                }
+
                 let prefix = '';
                 if (item.hasMainCheckbox) {
                     const checked = item.checked ? 'checked' : '';
-                    // Standard Checkbox for the Bullet Point
                     prefix = `<input type="checkbox" class="main-checkbox" ${checked} onchange="toggleGoal(this, ${item.lineIndex}, 0)">`;
                 } else {
-                    // No checkbox -> Show a bullet point style
                     prefix = `<span style="margin-right:10px; font-weight:bold; color:var(--accent-color);">&bull;</span>`;
                 }
 
                 return `<li class="${isSub ? 'sub-task' : ''}">
                     ${prefix} 
-                    <span class="goal-text-container">${processedText}</span>
+                    <span class="goal-text-container">${processedContent}</span>
                 </li>`;
             }
 
