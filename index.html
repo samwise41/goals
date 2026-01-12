@@ -145,13 +145,13 @@
             padding: 8px 0;
             border-bottom: 1px solid #f9f9f9;
             display: flex;
-            align-items: flex-start;
+            align-items: flex-start; /* Aligns the bullet to the top of multi-line text */
             line-height: 1.4;
         }
 
         /* --- Sub-task Styling --- */
         .sub-task {
-            margin-left: 15px; /* Reduced indentation slightly for mobile */
+            margin-left: 15px; 
             padding: 4px 0;
             font-size: 0.95em;
             color: #555;
@@ -161,23 +161,29 @@
         /* STANDARD CHECKBOX (For main bullet points) */
         input[type="checkbox"].main-checkbox {
             margin-right: 12px;
-            margin-top: 3px;
+            margin-top: 5px; /* Visual alignment with text */
             transform: scale(1.1);
             accent-color: var(--accent-color);
             flex-shrink: 0;
             cursor: pointer;
         }
         
+        /* --- TEXT CONTAINER (The fix for alignment) --- */
+        .goal-text-container {
+            display: flex;           /* Enables flexbox alignment */
+            align-items: center;     /* Vertically centers text and boxes */
+            flex-wrap: wrap;         /* Allows boxes to wrap on small screens */
+            gap: 3px;               /* Space between text and boxes */
+            width: 100%;
+        }
+
         /* --- CUSTOM DAY TRACKER BOXES (S M T W...) --- */
         
-        /* Wrapper for the custom checkbox */
         .day-check-wrapper {
             display: inline-block;
             position: relative;
-            margin: 0 1px; 
-            vertical-align: middle;
             cursor: pointer;
-            top: -2px; 
+            /* margin/top removed, handled by flex gap */
         }
 
         /* Hide the actual ugly browser checkbox */
@@ -189,7 +195,7 @@
             width: 0;
         }
 
-        /* The visual square - UPDATED SIZE TO 18px */
+        /* The visual square - SIZE: 18px */
         .day-check-face {
             display: flex;
             justify-content: center;
@@ -228,11 +234,6 @@
             content: '✓';
             font-size: 11px;
             font-weight: bold;
-        }
-
-        .goal-text-container {
-            display: inline-block;
-            width: 100%;
         }
 
         /* --- Mobile Hamburger Menu --- */
