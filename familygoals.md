@@ -257,7 +257,8 @@
 - [ ] Pray every night
 
 ### Physical
-- [ ] Be outside for at least 1 hour for at least 3 days a week
+
+- [ ] Do something physical for 20 minutes at least 2 days a week
     - [x] Week 1 (1/3/26)
     - [ ] Week 2 (1/10/26)
     - [ ] Week 3 (1/17/26)
