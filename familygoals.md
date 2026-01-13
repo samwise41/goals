@@ -366,7 +366,7 @@
 ### Intellectual
 - [ ] Read a chapter book for at least 20 minutes, 4 days a week
     - Week 1 (1/3): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
-    - Week 2 (1/10): [ ] [x] [ ] [ ] [ ] [ ] [ ]
+    - Week 2 (1/10): [x] [x] [ ] [ ] [ ] [ ] [ ]
     - Week 3 (1/17): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
     - Week 4 (1/24): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
     - Week 5 (1/31): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
