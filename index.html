@@ -172,15 +172,16 @@
         .goal-text-container {
             display: flex;
             align-items: center;
-            flex-wrap: wrap; 
+            flex-wrap: nowrap; /* Changed from wrap to nowrap to force single line */
             width: 100%;
-            gap: 4px;
+            gap: 8px; /* Increased gap slightly */
         }
 
         .tracker-label {
-            min-width: 110px; 
+            min-width: 130px; /* Increased width to align columns better */
             display: inline-block;
             font-weight: 500;
+            flex-shrink: 0; /* Prevents label from squishing */
         }
 
         .tracker-boxes {
