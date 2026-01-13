@@ -498,7 +498,6 @@
 ### Intellectual
 - [ ] Memorize the young women’s theme
 
----
 
 ## Eve
 ### Physical
