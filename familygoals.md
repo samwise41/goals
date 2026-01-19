@@ -182,7 +182,7 @@
 - [ ] Practice piano 1x per week
     - [x] Week 1 (1/3/26)
     - [ ] Week 2 (1/10/26)
-    - [ ] Week 3 (1/17/26)
+    - [x] Week 3 (1/17/26)
     - [ ] Week 4 (1/24/26)
     - [ ] Week 5 (1/31/26)
     - [ ] Week 6 (2/7/26)
