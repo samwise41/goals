@@ -476,7 +476,7 @@
     - Week 51 (12/19/26): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
     - Week 52 (12/26/26): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
 - [ ] Go on a mommy or daddy daughter date every month
-    - [ ] January
+    - [x] January
     - [ ] February
     - [ ] March
     - [ ] April
