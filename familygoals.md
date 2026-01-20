@@ -3,7 +3,7 @@
 ## Sam
 ### Social
 - [ ] Daddy daughter date every month
-    - [ ] January
+    - [x] January
     - [ ] February
     - [ ] March
     - [ ] April
