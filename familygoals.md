@@ -309,7 +309,7 @@
     - Week 52 (12/26): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
 
 ### Physical
-- [x] Do something physical for 20 minutes at least 2 days a week
+- [ ] Do something physical for 20 minutes at least 2 days a week
     - Week 1 (1/3): [ ] [ ] [ ] [ ] [ ] [ ] [ ]
     - Week 2 (1/10): [ ] [ ] [ ] [x] [ ] [x] [ ]
     - Week 3 (1/17): [ ] [x] [ ] [x] [x] [ ] [ ]
