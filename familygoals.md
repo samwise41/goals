@@ -241,7 +241,7 @@
 ### Social
 - [ ] Go on at least one daddy daughter date or mommy daughter date once a month
     - [ ] January
-    - [ ] February
+    - [x] February
     - [ ] March
     - [ ] April
     - [ ] May
